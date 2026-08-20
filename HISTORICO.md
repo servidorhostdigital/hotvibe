@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:50
+- Atualizado `Criativo/gerador-story.html`:
+  - Removida imagem de placeholder externa inicial. O fundo agora permanece totalmente preto por padrão quando nenhuma foto for selecionada.
+
 ## 20/08/2026 - 11:45
 - Adicionada opção de personalização de cor da fonte em `Criativo/gerador-story.html`:
   - Novo input do tipo `color` para alterar a cor principal do Nome e Subtítulo.
