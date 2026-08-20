@@ -14,7 +14,6 @@ interface PixModalProps {
   } | null
   copied: boolean
   onCopy: () => void
-  onSimulateSuccess?: () => void
 }
 
 export const PixModal: React.FC<PixModalProps> = ({
@@ -25,8 +24,7 @@ export const PixModal: React.FC<PixModalProps> = ({
   error,
   pixData,
   copied,
-  onCopy,
-  onSimulateSuccess
+  onCopy
 }) => {
   if (!isOpen) return null
 

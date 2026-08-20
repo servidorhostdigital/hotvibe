@@ -2,21 +2,6 @@
  * Utilitário de preservação e repasse de UTMs e parâmetros de URL
  */
 
-// Chaves comuns de rastreamento
-const UTM_KEYS = [
-  'utm_source',
-  'utm_medium',
-  'utm_campaign',
-  'utm_term',
-  'utm_content',
-  'src',
-  'sck',
-  'fbclid',
-  'gclid',
-  'ttclid',
-  'kwai_pixel_id'
-]
-
 /**
  * Captura todos os parâmetros da URL atual e salva no sessionStorage / localStorage
  */

@@ -10,19 +10,18 @@ interface PixResponse {
 
 interface UsePixCheckoutProps {
   slug: string
-  sessionId: string
   tracking: Record<string, string>
   onSuccess: () => void
 }
 
-export function usePixCheckout({ slug, sessionId, tracking, onSuccess }: UsePixCheckoutProps) {
+export function usePixCheckout({ tracking, onSuccess }: UsePixCheckoutProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pixData, setPixData] = useState<PixResponse | null>(null)
   const [copied, setCopied] = useState(false)
 
   // Função para gerar o PIX
-  const generatePix = async (valor: number, plano: string, cpf?: string) => {
+  const generatePix = async (valor: number, plano: string) => {
     setLoading(true)
     setError(null)
     setPixData(null)
@@ -68,7 +67,7 @@ export function usePixCheckout({ slug, sessionId, tracking, onSuccess }: UsePixC
   useEffect(() => {
     if (!pixData || !pixData.transactionId) return
 
-    let interval: NodeJS.Timeout
+    let interval: ReturnType<typeof setInterval>
 
     const checkStatus = async () => {
       try {
@@ -100,7 +99,7 @@ export function usePixCheckout({ slug, sessionId, tracking, onSuccess }: UsePixC
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [pixData, slug, onSuccess])
+  }, [pixData, onSuccess])
 
   const copyToClipboard = () => {
     if (pixData?.copiaCola) {

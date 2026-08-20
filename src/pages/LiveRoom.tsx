@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Send, Eye, Download } from 'lucide-react'
-import { buildUrlWithUtms, captureAndPersistUtms } from '../utils/utm'
 import { usePixCheckout } from '../hooks/usePixCheckout'
 import { PixModal } from '../components/PixModal'
 
@@ -47,17 +46,14 @@ export default function LiveRoom() {
   const currentSlug = slug || 'nicole'
   const videoRef = useRef<HTMLVideoElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [showAgeGate, setShowAgeGate] = useState(false)
   const [isVip, setIsVip] = useState(false)
   const [showVipModal, setShowVipModal] = useState(false)
   const [showPixModal, setShowPixModal] = useState(false)
-  const [pendingPlan, setPendingPlan] = useState<string>('vip_total')
   const [chatStep, setChatStep] = useState(0)
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [previewsLeft, setPreviewsLeft] = useState(2)
   const [showPreviewButton, setShowPreviewButton] = useState(false)
-  const [sessionId] = useState(() => 'sess_' + Math.random().toString(36).substring(2, 12))
   const [messages, setMessages] = useState<Array<{
     id: number | string;
     name: string;
@@ -78,7 +74,6 @@ export default function LiveRoom() {
   // Hook do PIX Checkout
   const pix = usePixCheckout({
     slug: currentSlug,
-    sessionId: sessionId,
     tracking: Object.fromEntries(new URLSearchParams(sessionStorage.getItem('captured_utms') || '')),
     onSuccess: () => {
       setShowPixModal(false)
@@ -135,7 +130,6 @@ export default function LiveRoom() {
   }
 
   const handleOpenPix = (valor: number, plano: string) => {
-    setPendingPlan(plano)
     setShowVipModal(false)
     setShowPixModal(true)
     pix.generatePix(valor, plano)
@@ -581,7 +575,6 @@ export default function LiveRoom() {
         pixData={pix.pixData}
         copied={pix.copied}
         onCopy={pix.copyToClipboard}
-        onSimulateSuccess={pix.simulatePayment}
       />
     </div>
   )
