@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:25
+- Atualizada a chave da API da FurionPay e corrigida validação do CPF:
+  - Inserida a nova API Key ativa no `config.ts`.
+  - Configurado um CPF matematicamente válido com dígitos verificadores corretos (`customerDefaults.document`) para evitar rejeição pela API FurionPay.
+  - Testada e validada a geração do PIX com retorno `success: true`, `txid` e QR Code.
+
 ## 20/08/2026 - 18:15
 - Adicionada inteligência de memória de contexto no chat (Skill de Agente):
   - O chat agora memoriza o nome do usuário em um estado global (`userName`).
