@@ -1,5 +1,12 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:10
+- Ajustada responsividade total para todos os tipos de dispositivos (Desktop, Tablet e Mobile):
+  - No Desktop e Tablet: container centralizado em formato de frame simulando smartphone moderno (`max-w-[480px]`, cantos arredondados, borda sutil e sombra), garantindo que a proporção vertical (estilo live/stories) e os elementos de vídeo e chat não fiquem esticados ou distorcidos em telas ultra-wide/grandes.
+  - No Mobile: preenchimento total de viewport (`100dvh`), suporte a `viewport-fit=cover` para notch/safe areas e prevenção de zoom acidental.
+  - Ajustada a altura máxima dinâmica e scroll dos modais (VIP, Upsells e PIX Modal) com `max-h-[90vh]`, garantindo que caibam perfeitamente em celulares compactos sem cortar botões de ação.
+  - Otimizado espaçamento e tipografia do chat e botões flutuantes para boa legibilidade em qualquer resolução.
+
 ## 20/08/2026 - 12:30
 - Corrigido erro de build na Vercel (`Cannot find namespace 'NodeJS'`) no arquivo `LiveRoom.tsx`, alterando a tipagem do `useRef` de `NodeJS.Timeout` para `ReturnType<typeof setTimeout>`.
 

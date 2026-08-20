@@ -336,220 +336,230 @@ export default function LiveRoom() {
   }
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-black relative overflow-hidden font-sans">
-      
-      {/* Top Bar (Badges) */}
-      <div className="absolute top-4 left-4 z-50 flex items-center space-x-2">
-        <div className="bg-[#00d26a] text-white text-[10px] font-bold px-2 py-1 rounded-sm tracking-wide">
-          ONLINE
-        </div>
-        <div className="bg-black/40 backdrop-blur-md text-white text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-white/10">
-          <Eye size={12} /> 12.4k
-        </div>
-        <button className="bg-black/40 backdrop-blur-md text-white text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/10 hover:bg-black/60 transition">
-          <Download size={12} /> App
-        </button>
-        <button className="bg-black/40 backdrop-blur-md text-white p-1.5 rounded-full flex items-center justify-center border border-white/10 hover:bg-black/60 transition">
-          <Eye size={14} />
-        </button>
-      </div>
-
-      {/* Área do Vídeo */}
-      <div className="absolute inset-0 z-0">
-        <video 
-          ref={videoRef}
-          src="https://res.cloudinary.com/hlsmqrui/video/upload/v1787232374/video.mp4" 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          onTimeUpdate={handleTimeUpdate}
-          className="w-full h-full object-cover"
-        />
+    <div className="flex justify-center items-center h-[100dvh] w-full bg-[#07070a] overflow-hidden">
+      {/* Container Responsivo Centralizado (Mobile em Desktop/Tablet ou Full em Celulares) */}
+      <div className="flex flex-col h-[100dvh] w-full max-w-[480px] md:max-w-[460px] lg:max-w-[440px] md:h-[92vh] md:max-h-[920px] md:rounded-[36px] bg-black relative overflow-hidden font-sans md:border md:border-white/10 md:shadow-[0_0_50px_rgba(0,0,0,0.8)]">
         
-        {/* Overlay escuro no topo e na base para dar contraste aos textos */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none"></div>
-      </div>
-
-      {/* Overlay de Blur quando o VIP Modal está aberto */}
-      {showVipModal && (
-        <div className="absolute inset-0 backdrop-blur-xl bg-black/60 z-10 transition-all duration-500"></div>
-      )}
-
-      {/* Área Inferior (Chat e Input) */}
-      <div className="absolute bottom-0 left-0 w-full z-30 p-4 pb-6 sm:pb-8 max-w-lg mx-auto flex flex-col justify-end">
-        
-        {/* Mensagens Flutuantes (Ocultas se for VIP) */}
-        {!isVip && (
-          <div className="flex flex-col gap-3 mb-4 overflow-y-auto max-h-[50vh] mask-image-to-t [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 80%, transparent 100%)' }}>
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.isModel ? 'justify-start' : 'justify-end'} w-full`}>
-                <div className={`backdrop-blur-md rounded-2xl p-3.5 shadow-lg max-w-[90%] sm:max-w-[85%] w-fit ${msg.isModel ? 'bg-[#18181b]/80 border border-white/10 rounded-bl-sm' : 'bg-[#f43f8e] rounded-br-sm'}`}>
-                  {msg.isModel && (
-                    <div className="text-[11px] font-bold mb-1 uppercase tracking-wide text-[#ff4b4b]">
-                      {msg.name}
-                    </div>
-                  )}
-                  
-                  {msg.previewUrl && msg.previewType === 'video' && (
-                    <video 
-                      src={msg.previewUrl} 
-                      className="rounded-xl mb-2 w-full max-w-[280px]" 
-                      autoPlay 
-                      muted 
-                      loop 
-                      playsInline 
-                    />
-                  )}
-                  
-                  <div className="text-white text-[15px] leading-relaxed break-words whitespace-normal">
-                    {msg.text}
-                  </div>
-                  
-                  {msg.previewInfo && (
-                    <div className="mt-2 pt-2 border-t border-white/10">
-                      <p className="text-[11px] text-pink-400 font-bold">
-                        🔥 {msg.previewInfo.remaining > 0 ? `Ainda restam ${msg.previewInfo.remaining} prévia${msg.previewInfo.remaining > 1 ? 's' : ''}!` : 'Essa foi sua última prévia!'}
-                      </p>
-                      <p className="text-[10px] text-zinc-500 mt-0.5">
-                        No VIP eu mostro tudo sem limites 💋
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="bg-[#18181b]/80 backdrop-blur-md border border-white/10 rounded-2xl rounded-bl-sm p-3.5 shadow-lg flex items-center gap-1.5 h-[42px]">
-                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+        {/* Top Bar (Badges) */}
+        <div className="absolute top-4 left-4 right-4 z-40 flex items-center justify-between pointer-events-none">
+          <div className="flex items-center space-x-2 pointer-events-auto">
+            <div className="bg-[#00d26a] text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide flex items-center gap-1 shadow-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> ONLINE
+            </div>
+            <div className="bg-black/50 backdrop-blur-md text-white text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-white/10 shadow-md">
+              <Eye size={12} /> 12.4k
+            </div>
           </div>
-        )}
-
-        {/* Botão de Prévia Flutuante (Aparece quando o chat atinge o gatilho e há prévias disponíveis) */}
-        {showPreviewButton && previewsLeft > 0 && (
-          <div className="flex justify-center mb-4 relative z-50">
-            <button 
-              onClick={handlePreview}
-              className="bg-[#ff5a00] hover:bg-[#e04f00] text-white font-bold py-2.5 px-6 rounded-full flex items-center gap-2 transition text-sm shadow-lg animate-pulse"
-            >
-              <Eye size={16} />
-              Ver Prévia ({previewsLeft} restante{previewsLeft > 1 ? 's' : ''})
+          
+          <div className="flex items-center space-x-2 pointer-events-auto">
+            <button className="bg-black/50 backdrop-blur-md text-white text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/10 hover:bg-black/70 transition shadow-md">
+              <Download size={12} /> App
+            </button>
+            <button className="bg-black/50 backdrop-blur-md text-white p-1.5 rounded-full flex items-center justify-center border border-white/10 hover:bg-black/70 transition shadow-md">
+              <Eye size={14} />
             </button>
           </div>
-        )}
+        </div>
 
-        {/* Botão LIBERAR VIP Flutuante quando as prévias acabam ou modal ativo */}
-        {(showVipModal || previewsLeft === 0) && !isVip && (
-          <div className="flex items-center justify-center gap-3 mb-3 relative z-50">
-            <button 
-              onClick={() => setShowVipModal(true)}
-              className="w-full sm:w-auto bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 text-white font-black text-base px-8 py-3.5 rounded-full flex items-center justify-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl"
-            >
-              <span>🔓</span> LIBERAR VIP
-            </button>
-          </div>
-        )}
-
-        {/* Input de Chat */}
-        <div className="bg-[#18181b]/80 backdrop-blur-md border border-white/10 rounded-full px-4 py-3 flex items-center gap-2 shadow-xl relative z-50">
-          <input 
-            type="text" 
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Converse com a Nicole Oliveira..." 
-            className="bg-transparent border-none outline-none text-[15px] w-full text-white placeholder:text-zinc-500"
+        {/* Área do Vídeo */}
+        <div className="absolute inset-0 z-0">
+          <video 
+            ref={videoRef}
+            src="https://res.cloudinary.com/hlsmqrui/video/upload/v1787232374/video.mp4" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            onTimeUpdate={handleTimeUpdate}
+            className="w-full h-full object-cover select-none pointer-events-none"
           />
-          <button 
-            className="text-zinc-400 hover:text-white transition p-1 shrink-0"
-            onClick={handleSendMessage}
-          >
-            <Send size={18} />
-          </button>
+          
+          {/* Overlay escuro no topo e na base para dar contraste aos textos */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent via-50% to-black/80 pointer-events-none"></div>
         </div>
+
+        {/* Overlay de Blur quando o VIP Modal está aberto */}
+        {showVipModal && (
+          <div className="absolute inset-0 backdrop-blur-xl bg-black/60 z-10 transition-all duration-500"></div>
+        )}
+
+        {/* Área Inferior (Chat e Input) */}
+        <div className="absolute bottom-0 left-0 w-full z-30 p-3 sm:p-4 pb-4 sm:pb-6 flex flex-col justify-end">
+          
+          {/* Mensagens Flutuantes (Ocultas se for VIP) */}
+          {!isVip && (
+            <div className="flex flex-col gap-2.5 mb-3 overflow-y-auto max-h-[42vh] sm:max-h-[46vh] mask-image-to-t [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 85%, transparent 100%)' }}>
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.isModel ? 'justify-start' : 'justify-end'} w-full`}>
+                  <div className={`backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg max-w-[88%] sm:max-w-[82%] w-fit ${msg.isModel ? 'bg-[#18181b]/85 border border-white/10 rounded-bl-sm' : 'bg-[#f43f8e] rounded-br-sm'}`}>
+                    {msg.isModel && (
+                      <div className="text-[11px] font-bold mb-1 uppercase tracking-wide text-[#ff4b4b]">
+                        {msg.name}
+                      </div>
+                    )}
+                    
+                    {msg.previewUrl && msg.previewType === 'video' && (
+                      <video 
+                        src={msg.previewUrl} 
+                        className="rounded-xl mb-2 w-full max-w-[240px] sm:max-w-[280px]" 
+                        autoPlay 
+                        muted 
+                        loop 
+                        playsInline 
+                      />
+                    )}
+                    
+                    <div className="text-white text-[13.5px] sm:text-[14.5px] leading-relaxed break-words whitespace-normal font-normal">
+                      {msg.text}
+                    </div>
+                    
+                    {msg.previewInfo && (
+                      <div className="mt-2 pt-2 border-t border-white/10">
+                        <p className="text-[11px] text-pink-400 font-bold">
+                          🔥 {msg.previewInfo.remaining > 0 ? `Ainda restam ${msg.previewInfo.remaining} prévia${msg.previewInfo.remaining > 1 ? 's' : ''}!` : 'Essa foi sua última prévia!'}
+                        </p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">
+                          No VIP eu mostro tudo sem limites 💋
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              
+              {/* Typing Indicator */}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-[#18181b]/85 backdrop-blur-md border border-white/10 rounded-2xl rounded-bl-sm px-3.5 py-2.5 shadow-lg flex items-center gap-1.5 h-[38px]">
+                    <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+
+          {/* Botão de Prévia Flutuante (Aparece quando o chat atinge o gatilho e há prévias disponíveis) */}
+          {showPreviewButton && previewsLeft > 0 && (
+            <div className="flex justify-center mb-3 relative z-40">
+              <button 
+                onClick={handlePreview}
+                className="w-full sm:w-auto bg-[#ff5a00] hover:bg-[#e04f00] text-white font-bold py-2.5 px-6 rounded-full flex items-center justify-center gap-2 transition text-sm shadow-lg animate-pulse"
+              >
+                <Eye size={16} />
+                Ver Prévia ({previewsLeft} restante{previewsLeft > 1 ? 's' : ''})
+              </button>
+            </div>
+          )}
+
+          {/* Botão LIBERAR VIP Flutuante quando as prévias acabam ou modal ativo */}
+          {(showVipModal || previewsLeft === 0) && !isVip && (
+            <div className="flex items-center justify-center gap-3 mb-3 relative z-40">
+              <button 
+                onClick={() => setShowVipModal(true)}
+                className="w-full bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 text-white font-black text-sm sm:text-base px-6 py-3 sm:py-3.5 rounded-full flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95 shadow-xl"
+              >
+                <span>🔓</span> LIBERAR VIP
+              </button>
+            </div>
+          )}
+
+          {/* Input de Chat */}
+          <div className="bg-[#18181b]/85 backdrop-blur-md border border-white/10 rounded-full px-4 py-2.5 sm:py-3 flex items-center gap-2 shadow-xl relative z-40">
+            <input 
+              type="text" 
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Converse com a Nicole Oliveira..." 
+              className="bg-transparent border-none outline-none text-[14px] sm:text-[15px] w-full text-white placeholder:text-zinc-500"
+            />
+            <button 
+              className="text-zinc-400 hover:text-white transition p-1 shrink-0"
+              onClick={handleSendMessage}
+              aria-label="Enviar mensagem"
+            >
+              <Send size={18} />
+            </button>
+          </div>
+        </div>
+
       </div>
 
       {/* Modal VIP (Paywall Original LiveCan) */}
       {showVipModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm rounded-2xl p-6 animate-in zoom-in-95 duration-200 shadow-2xl relative">
+        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4">
+          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 animate-in zoom-in-95 duration-200 shadow-2xl relative [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             
             <button 
               onClick={() => setShowVipModal(false)}
-              className="absolute top-4 right-4 text-zinc-500 hover:text-white transition"
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white transition p-1"
             >
               ✕
             </button>
 
-            <div className="text-center mb-6">
-              <div className="inline-block bg-[#00d26a] text-white text-[10px] font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider">
+            <div className="text-center mb-5 sm:mb-6">
+              <div className="inline-block bg-[#00d26a] text-white text-[10px] font-bold px-3 py-1 rounded-full mb-2.5 uppercase tracking-wider">
                 UPGRADE EXCLUSIVO 💎
               </div>
-              <h3 className="text-2xl font-black text-white uppercase tracking-wider leading-tight">
+              <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider leading-tight">
                 QUER O ACESSO <br/><span className="text-[#00d26a]">TOTAL? 💦</span>
               </h3>
             </div>
             
-            <div className="bg-[#18181b] border border-white/5 rounded-xl p-4 mb-6">
-              <p className="text-zinc-400 text-[10px] mb-4 uppercase tracking-wider">
+            <div className="bg-[#18181b] border border-white/5 rounded-xl p-3.5 sm:p-4 mb-5 sm:mb-6">
+              <p className="text-zinc-400 text-[10px] mb-3 uppercase tracking-wider">
                 LIBERE O <span className="text-[#00d26a] font-bold">VIP COMPLETO</span> E GANHE ACESSO A:
               </p>
               
-              <div className="space-y-3">
-                <div className="flex gap-3 items-start">
+              <div className="space-y-2.5 sm:space-y-3">
+                <div className="flex gap-2.5 items-start">
                   <div className="text-yellow-400 text-sm mt-0.5">⭐</div>
                   <div className="text-white text-xs font-bold uppercase leading-relaxed">TIRO A ROUPA TODA E FICO NUA PRA VOCÊ 😍</div>
                 </div>
                 
-                <div className="flex gap-3 items-start">
+                <div className="flex gap-2.5 items-start">
                   <div className="text-yellow-400 text-sm mt-0.5">⭐</div>
                   <div className="text-white text-xs font-bold uppercase leading-relaxed">ME MASTURBO BEM GOSTOSO COM VOCÊ AO VIVO 💦</div>
                 </div>
 
-                <div className="flex gap-3 items-start">
+                <div className="flex gap-2.5 items-start">
                   <div className="text-yellow-400 text-sm mt-0.5">⭐</div>
                   <div className="text-white text-xs font-bold uppercase leading-relaxed">PASSO MEU WHATSAPP PESSOAL AGORA 📱</div>
                 </div>
 
-                <div className="flex gap-3 items-start">
+                <div className="flex gap-2.5 items-start">
                   <div className="text-yellow-400 text-sm mt-0.5">⭐</div>
                   <div className="text-white text-xs font-bold uppercase leading-relaxed">A GENTE MARCA DE SE VER AÍ 📍</div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-center mb-4">
-              <div className="border border-[#00d26a]/30 text-[#00d26a] text-[10px] font-bold px-4 py-1.5 rounded-full flex items-center gap-2">
+            <div className="flex justify-center mb-3.5">
+              <div className="border border-[#00d26a]/30 text-[#00d26a] text-[10px] font-bold px-3.5 py-1 rounded-full flex items-center gap-1.5">
                 🔒 SIGILO TOTAL
               </div>
             </div>
 
             <div className="text-center mb-4">
-              <div className="text-[#f43f8e] text-xs font-bold uppercase tracking-widest mb-1">OFERTA ÚNICA</div>
+              <div className="text-[#f43f8e] text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-0.5">OFERTA ÚNICA</div>
               <div className="text-zinc-500 text-xs line-through">De R$ 35,98</div>
-              <div className="text-white font-black text-3xl mt-1">R$ 17,99</div>
+              <div className="text-white font-black text-2xl sm:text-3xl mt-0.5">R$ 17,99</div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               <button 
                 onClick={() => handleOpenPix(17.99, 'vip_total')}
-                className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-black py-3.5 rounded-xl flex items-center justify-center gap-2 transition text-sm shadow-[0_0_20px_rgba(255,0,0,0.3)]"
+                className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-black py-3 sm:py-3.5 rounded-xl flex items-center justify-center gap-2 transition text-xs sm:text-sm shadow-[0_0_20px_rgba(255,0,0,0.3)] active:scale-[0.98]"
               >
                 <span className="mr-1">✔️</span> ACESSO COMPLETO (R$ 17,99) 🔥
               </button>
 
               <button 
                 onClick={() => handleOpenPix(12.99, 'vip_basico')}
-                className="w-full bg-[#18181b] hover:bg-[#27272a] border border-white/10 text-white font-bold py-3.5 rounded-xl flex items-center justify-center transition text-sm"
+                className="w-full bg-[#18181b] hover:bg-[#27272a] border border-white/10 text-white font-bold py-3 sm:py-3.5 rounded-xl flex items-center justify-center transition text-xs sm:text-sm active:scale-[0.98]"
               >
                 ACESSO BÁSICO (R$ 12,99)
               </button>
@@ -560,41 +570,41 @@ export default function LiveRoom() {
 
       {/* Modal Dinâmico de Ofertas (Upsells) */}
       {activeOffer && activeOffer.id !== 'front' && (
-        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 sm:p-4">
+        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4">
           <div className="absolute inset-0 backdrop-blur-xl bg-black/60 z-10 transition-all duration-500"></div>
-          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm rounded-3xl p-6 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 shadow-2xl z-20">
+          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 shadow-2xl z-20 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             
-            <div className="text-center mb-6">
-              <div className={`inline-block ${activeOffer.id === 'upsell_reconexao' ? 'bg-[#ff9900] text-black font-extrabold' : 'bg-[#00d26a] text-white font-bold'} text-[10px] px-3 py-1 rounded-full mb-3 uppercase tracking-wider`}>
+            <div className="text-center mb-5 sm:mb-6">
+              <div className={`inline-block ${activeOffer.id === 'upsell_reconexao' ? 'bg-[#ff9900] text-black font-extrabold' : 'bg-[#00d26a] text-white font-bold'} text-[10px] px-3 py-1 rounded-full mb-2.5 uppercase tracking-wider`}>
                 {activeOffer.badge || 'UPGRADE EXCLUSIVO 💎'}
               </div>
-              <h3 className="text-2xl font-black text-white uppercase tracking-wider leading-tight">
+              <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider leading-tight">
                 {activeOffer.title}
               </h3>
-              <p className="text-zinc-400 text-[11px] mt-3 uppercase tracking-wider">
+              <p className="text-zinc-400 text-[10.5px] sm:text-[11px] mt-2.5 uppercase tracking-wider leading-relaxed">
                 {activeOffer.copy}
               </p>
             </div>
             
-            <div className="space-y-3 mb-6">
+            <div className="space-y-2.5 sm:space-y-3 mb-5 sm:mb-6">
               {activeOffer.benefits.map((benefit, idx) => (
-                <div key={idx} className="flex gap-3 items-start">
-                  <div className="text-yellow-400 text-lg mt-0.5">⭐</div>
+                <div key={idx} className="flex gap-2.5 items-start">
+                  <div className="text-yellow-400 text-base mt-0.5">⭐</div>
                   <div className="text-white text-xs font-bold uppercase leading-relaxed">{benefit}</div>
                 </div>
               ))}
             </div>
 
-            <div className="flex justify-center mb-4">
-              <div className="border border-zinc-700 rounded-full px-4 py-1 flex items-center gap-2">
+            <div className="flex justify-center mb-3.5">
+              <div className="border border-zinc-700 rounded-full px-3.5 py-1 flex items-center gap-2">
                 <span className="text-zinc-500 text-xs">🔒</span>
                 <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider">SIGILO TOTAL</span>
               </div>
             </div>
 
-            <div className="text-center mb-6">
-              <div className="text-[#f43f8e] text-[10px] font-bold uppercase tracking-wider mb-1">OFERTA ESPECIAL</div>
-              <div className="text-white font-black text-4xl">R$ {activeOffer.price}</div>
+            <div className="text-center mb-5">
+              <div className="text-[#f43f8e] text-[10px] font-bold uppercase tracking-wider mb-0.5">OFERTA ESPECIAL</div>
+              <div className="text-white font-black text-3xl sm:text-4xl">R$ {activeOffer.price}</div>
             </div>
 
             <button 
@@ -602,7 +612,7 @@ export default function LiveRoom() {
                 const numericPrice = parseFloat(activeOffer.price.replace(',', '.'))
                 handleOpenPix(numericPrice, activeOffer.id)
               }}
-              className="w-full bg-[#ff2a2a] hover:bg-[#e60000] text-white font-black py-3.5 rounded-xl flex items-center justify-center gap-2 transition text-sm shadow-[0_0_20px_rgba(255,42,42,0.3)] mb-3"
+              className="w-full bg-[#ff2a2a] hover:bg-[#e60000] text-white font-black py-3 sm:py-3.5 rounded-xl flex items-center justify-center gap-2 transition text-xs sm:text-sm shadow-[0_0_20px_rgba(255,42,42,0.3)] mb-2.5 active:scale-[0.98]"
             >
               <span className="mr-1">✓</span> LIBERAR AGORA (R$ {activeOffer.price}) 🔥
             </button>
@@ -611,7 +621,7 @@ export default function LiveRoom() {
               onClick={() => {
                 handlePaymentSuccess() // Pula a oferta
               }}
-              className="w-full bg-[#18181b] hover:bg-zinc-800 text-zinc-400 font-bold py-3 rounded-xl transition text-xs"
+              className="w-full bg-[#18181b] hover:bg-zinc-800 text-zinc-400 font-bold py-2.5 sm:py-3 rounded-xl transition text-xs active:scale-[0.98]"
             >
               Continuar assistindo sem esse upgrade
             </button>

@@ -29,7 +29,7 @@ export const PixModal: React.FC<PixModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/80 backdrop-blur-md transition-all"
@@ -38,16 +38,16 @@ export const PixModal: React.FC<PixModalProps> = ({
 
       {/* Mensagens Flutuantes (Aparecem apenas quando o PIX é gerado) */}
       {pixData && !loading && !error && (
-        <div className="absolute top-10 left-4 z-20 flex flex-col gap-3 animate-in fade-in slide-in-from-left-4 duration-500">
-          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm border border-zinc-800/50 rounded-full py-2 px-4 w-fit">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] flex items-center justify-center text-[10px] font-bold text-white">
+        <div className="absolute top-4 sm:top-10 left-3 sm:left-4 right-3 sm:right-auto z-20 flex flex-col gap-2 sm:gap-3 animate-in fade-in slide-in-from-left-4 duration-500 pointer-events-none">
+          <div className="flex items-center gap-2 bg-black/70 backdrop-blur-sm border border-zinc-800/80 rounded-full py-1.5 px-3.5 sm:py-2 sm:px-4 w-fit shadow-md">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] flex items-center justify-center text-[10px] font-bold text-white">
               {modelName.charAt(0)}
             </div>
             <span className="text-white text-xs font-medium">Oii bebê, tô te esperando aqui 😈</span>
           </div>
           
-          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm border border-zinc-800/50 rounded-full py-2 px-4 w-fit animate-in fade-in slide-in-from-left-4 duration-500 delay-300 fill-mode-backwards">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] flex items-center justify-center text-[10px] font-bold text-white">
+          <div className="flex items-center gap-2 bg-black/70 backdrop-blur-sm border border-zinc-800/80 rounded-full py-1.5 px-3.5 sm:py-2 sm:px-4 w-fit animate-in fade-in slide-in-from-left-4 duration-500 delay-300 fill-mode-backwards shadow-md">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] flex items-center justify-center text-[10px] font-bold text-white">
               {modelName.charAt(0)}
             </div>
             <span className="text-white text-xs font-medium">Assim que você pagar eu faço TUDO com você 🔥</span>
@@ -56,18 +56,18 @@ export const PixModal: React.FC<PixModalProps> = ({
       )}
 
       {/* Modal Container */}
-      <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative z-10 animate-in zoom-in-95 duration-200 text-center">
+      <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 shadow-2xl relative z-10 animate-in zoom-in-95 duration-200 text-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         
         {/* Botão Fechar */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-500 hover:text-white transition"
+          className="absolute top-4 right-4 text-zinc-500 hover:text-white transition p-1"
         >
           <X size={20} />
         </button>
 
         {/* Badge Superior */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-3.5 sm:mb-4">
           <div className="bg-[#ff0033] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_10px_rgba(255,0,51,0.5)]">
             <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
             PAGAMENTO PENDENTE
@@ -75,15 +75,15 @@ export const PixModal: React.FC<PixModalProps> = ({
         </div>
 
         {/* Título */}
-        <h3 className="text-xl font-black text-white uppercase tracking-wide leading-tight mb-2">
+        <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-wide leading-tight mb-1.5 sm:mb-2">
           🔥 {modelName} COMEÇOU!
         </h3>
-        <p className="text-zinc-400 text-xs mb-6">
+        <p className="text-zinc-400 text-[11px] sm:text-xs mb-5 sm:mb-6">
           Vídeo chamada iniciada... Realize o pagamento para participar!
         </p>
 
         {/* Passos */}
-        <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-400 mb-6 font-medium">
+        <div className="flex items-center justify-center gap-2 text-[10.5px] sm:text-[11px] text-zinc-400 mb-5 sm:mb-6 font-medium">
           <div className="flex items-center gap-1">
             <span className="bg-zinc-800 text-white w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold">1</span>
             Copie o código
@@ -102,7 +102,7 @@ export const PixModal: React.FC<PixModalProps> = ({
             <p className="text-sm font-semibold text-zinc-300">Gerando seu PIX...</p>
           </div>
         ) : error ? (
-          <div className="py-6 bg-red-950/40 border border-red-800/50 rounded-2xl p-4 mb-4">
+          <div className="py-5 bg-red-950/40 border border-red-800/50 rounded-2xl p-4 mb-4">
             <p className="text-red-400 text-xs mb-3">{error}</p>
             <button 
               onClick={onClose}
@@ -116,7 +116,7 @@ export const PixModal: React.FC<PixModalProps> = ({
             {/* Botão de Copiar PIX com Gradiente Rosa/Roxo */}
             <button
               onClick={onCopy}
-              className={`w-full py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-[0_0_25px_rgba(168,85,247,0.35)] ${
+              className={`w-full py-3.5 sm:py-4 px-5 sm:px-6 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-[0_0_25px_rgba(168,85,247,0.35)] ${
                 copied 
                   ? 'bg-emerald-600 text-white' 
                   : 'bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#8b5cf6] text-white hover:opacity-95 active:scale-[0.98]'
@@ -136,7 +136,7 @@ export const PixModal: React.FC<PixModalProps> = ({
             </button>
 
             {/* Status de Aguardo */}
-            <div className="flex items-center justify-center gap-2 mt-5 text-emerald-400 text-xs font-semibold">
+            <div className="flex items-center justify-center gap-2 mt-4 sm:mt-5 text-emerald-400 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span>Aguardando pagamento...</span>
             </div>
