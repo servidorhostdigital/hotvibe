@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 12:20
+- Repositório remoto do GitHub reconfigurado para `https://github.com/servidorhostdigital/hotvibe.git`.
+- Push completo realizado com sucesso na branch `main`.
+
 ## 20/08/2026 - 12:15
 - Corrigido bloqueio de digitação no chat em `live-funnel/src/pages/LiveRoom.tsx`:
   - Removido o atributo `disabled` condicional do input e do botão de envio que travava o chat quando um gatilho de oferta ou término de prévia acontecia.
