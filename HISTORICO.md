@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:28
+- Atualizado o estilo visual da caixa de entrada do chat para o formato do chat do VS Code:
+  - Bordas arredondadas modernas (`rounded-xl` em vez de formato pill/cápsula).
+  - Borda base sutil com realce de foco (`focus-within:border-[#007fd4]`).
+
 ## 20/08/2026 - 17:15
 - Bloqueado o deslocamento/arrasto da página no mobile (efeito "bounce" e scroll indevido):
   - Adicionado `fixed inset-0` e `touch-none` na raiz da página para fixar a tela no viewport.
