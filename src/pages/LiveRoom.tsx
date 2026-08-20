@@ -213,8 +213,14 @@ export default function LiveRoom() {
       const lowerMsg = msg.toLowerCase()
       let extracted = ''
       const words = msg.split(' ')
+      
+      // Ignora palavras comuns de saudação
+      const ignoreWords = ['oi', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom', 'dia', 'tarde', 'noite']
+      
       if (words.length <= 2) {
-        extracted = words[0]
+        // Pega a primeira palavra que não seja uma saudação
+        const validWord = words.find(w => !ignoreWords.includes(w.toLowerCase()))
+        if (validWord) extracted = validWord
       } else if (lowerMsg.includes('sou o') || lowerMsg.includes('sou a')) {
         const match = lowerMsg.match(/sou [oa] (\w+)/)
         if (match) extracted = match[1]
