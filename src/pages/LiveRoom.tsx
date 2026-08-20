@@ -204,7 +204,20 @@ export default function LiveRoom() {
     // Lógica de respostas dinâmicas baseadas no contexto da mensagem do usuário
     let responseText = ''
 
-    if (chatStep === 0) {
+    // Se o usuário perguntar o nome dela em qualquer momento
+    const isAskingHerName = userMessageLower.includes('seu nome') || 
+                            userMessageLower.includes('qual seu nome') || 
+                            userMessageLower.includes('como vc se chama') || 
+                            userMessageLower.includes('como você se chama') ||
+                            userMessageLower.includes('como você chama') ||
+                            userMessageLower.includes('como vc chama') ||
+                            userMessageLower.includes('quem é você') ||
+                            userMessageLower.includes('quem e vc') ||
+                            userMessageLower.includes('quem é vc')
+
+    if (isAskingHerName) {
+      responseText = 'Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, amor 😈🔥 E você, como se chama?'
+    } else if (chatStep === 0) {
       setChatStep(1)
       
       responseText = 'Que bom que você me respondeu... Eu tava me sentindo tão sozinha aqui. Como você se chama? 💋'

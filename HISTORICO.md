@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:40
+- Adicionada resposta inteligente no chat quando o usuário pergunta o nome da modelo:
+  - Detecta variações de perguntas como "qual seu nome", "como você se chama", "quem é você", etc.
+  - Resposta personalizada com tom provocativo: *"Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, amor 😈🔥 E você, como se chama?"*.
+
 ## 20/08/2026 - 17:35
 - Corrigido travamento indesejado do vídeo durante a conversa no chat:
   - Removida a chamada `videoRef.current.pause()` que era acionada no passo final da conversa (passo 5).
