@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import LiveRoom from './pages/LiveRoom'
 import { captureAndPersistUtms } from './utils/utm'
@@ -11,8 +11,10 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<LiveRoom />} />
       <Route path="/hotlive/:slug" element={<LiveRoom />} />
-      <Route path="*" element={<div className="flex h-screen items-center justify-center text-zinc-500">Sala não encontrada</div>} />
+      <Route path="/:slug" element={<LiveRoom />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
