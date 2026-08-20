@@ -54,6 +54,8 @@ export default function LiveRoom() {
   const [isTyping, setIsTyping] = useState(false)
   const [previewsLeft, setPreviewsLeft] = useState(2)
   const [showPreviewButton, setShowPreviewButton] = useState(false)
+  const [hasInteracted, setHasInteracted] = useState(false)
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [messages, setMessages] = useState<Array<{
     id: number | string;
     name: string;
@@ -85,6 +87,36 @@ export default function LiveRoom() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
+
+  // Timer de Inatividade (40 segundos)
+  useEffect(() => {
+    // Limpa o timer existente
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current)
+    }
+
+    // Só inicia o timer se o usuário já interagiu, não é VIP, e não há oferta ativa
+    if (hasInteracted && !isVip && !activeOffer && !showVipModal && !showPixModal) {
+      inactivityTimerRef.current = setTimeout(() => {
+        setIsTyping(true)
+        setTimeout(() => {
+          setMessages(prev => [...prev, { 
+            id: 'inactivity-' + Date.now(), 
+            name: 'NICOLE OLIVEIRA 🔥', 
+            text: 'Você tá aí amor? Tô te esperando... 🥺', 
+            isModel: true 
+          }])
+          setIsTyping(false)
+        }, 2500)
+      }, 40000) // 40 segundos
+    }
+
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current)
+      }
+    }
+  }, [messages, isVip, activeOffer, showVipModal, showPixModal, hasInteracted])
 
   // Monitora o tempo do vídeo para disparar as ofertas
   const handleTimeUpdate = () => {
@@ -140,6 +172,9 @@ export default function LiveRoom() {
 
     const userMessage = inputValue.trim()
     const userMessageLower = userMessage.toLowerCase()
+
+    // Marca que o usuário interagiu
+    setHasInteracted(true)
 
     // Adiciona a mensagem do usuário
     setMessages(prev => [...prev, { id: Date.now(), name: 'VOCÊ', text: userMessage, isModel: false }])

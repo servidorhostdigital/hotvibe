@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 12:05
+- Adicionada lógica de inatividade no chat em `live-funnel/src/pages/LiveRoom.tsx`:
+  - Se o usuário ficar mais de 40 segundos sem enviar mensagem (após a primeira interação), a modelo envia automaticamente: "Você tá aí amor? Tô te esperando... 🥺".
+  - O timer é resetado a cada nova mensagem e pausado caso modais de pagamento ou ofertas estejam abertos.
+
 ## 20/08/2026 - 12:00
 - Aplicadas diretrizes de segurança da skill `JH7-MESTRE-SEGURANÇA`:
   - Implementada função `sanitizeFilename` em `Criativo/gerador-story.html` para tratamento e sanitização estrita de nomes de arquivos baixados (evitando caracteres ilegais, injeções de caminho e normalizando acentuação).
