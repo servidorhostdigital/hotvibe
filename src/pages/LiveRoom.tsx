@@ -376,7 +376,7 @@ export default function LiveRoom() {
         <div className="absolute inset-0 z-0">
           <video 
             ref={videoRef}
-            src="https://res.cloudinary.com/hlsmqrui/video/upload/q_auto:best,vc_auto,f_auto/v1787232374/video.mp4" 
+            src="https://res.cloudinary.com/hlsmqrui/video/upload/v1787232374/video.mp4" 
             autoPlay 
             loop 
             muted 

@@ -1,5 +1,8 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:00
+- Revertida a URL do vídeo para a versão original do Cloudinary sem parâmetros de transformação (`q_auto`, `vc_auto`), pois a conversão em tempo real estava falhando e retornando tela preta. A URL original já entrega o vídeo em 1080p com boa performance.
+
 ## 20/08/2026 - 17:55
 - Otimizada a entrega do vídeo via CDN Cloudinary mantendo máxima qualidade e velocidade:
   - Aplicados parâmetros de otimização de alta fidelidade na URL do Cloudinary: `q_auto:best,vc_auto,f_auto`.
