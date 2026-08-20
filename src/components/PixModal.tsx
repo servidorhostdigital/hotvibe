@@ -97,9 +97,18 @@ export const PixModal: React.FC<PixModalProps> = ({
 
         {/* Conteúdo de Carregamento / Erro / Sucesso */}
         {loading ? (
-          <div className="py-8 flex flex-col items-center justify-center gap-3">
-            <Loader2 size={32} className="text-[#a855f7] animate-spin" />
-            <p className="text-sm font-semibold text-zinc-300">Gerando seu PIX...</p>
+          <div className="py-6 flex flex-col items-center justify-center gap-4">
+            <div className="relative">
+              <Loader2 size={40} className="text-[#a855f7] animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full animate-ping" />
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <p className="text-sm font-bold text-white animate-pulse">Conectando ao banco...</p>
+              <p className="text-[10px] text-zinc-400">Gerando chave PIX segura e criptografada</p>
+              <p className="text-[9px] text-zinc-500 mt-1">Isso pode levar alguns segundos</p>
+            </div>
           </div>
         ) : error ? (
           <div className="py-5 bg-red-950/40 border border-red-800/50 rounded-2xl p-4 mb-4">
