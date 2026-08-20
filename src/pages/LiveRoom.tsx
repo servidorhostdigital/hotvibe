@@ -150,7 +150,10 @@ export default function LiveRoom() {
 
     // Só pausa e exibe a oferta se ela ainda não estiver ativa
     if (offerToTrigger && activeOffer?.id !== offerToTrigger.id) {
-      videoRef.current.pause()
+      // Não pausa o vídeo para a oferta de front-end (1 minuto) para não interromper o chat
+      if (offerToTrigger.id !== 'front') {
+        videoRef.current.pause()
+      }
       setActiveOffer(offerToTrigger)
     }
   }

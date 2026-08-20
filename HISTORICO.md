@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:05
+- Corrigido travamento do vídeo aos 60 segundos:
+  - O vídeo estava pausando automaticamente quando atingia 1 minuto (gatilho da oferta `front`), o que interrompia a experiência do usuário enquanto ele ainda estava conversando no chat.
+  - Adicionada uma exceção no `handleTimeUpdate` para não pausar o vídeo quando a oferta disparada for a de `front`.
+
 ## 20/08/2026 - 18:00
 - Revertida a URL do vídeo para a versão original do Cloudinary sem parâmetros de transformação (`q_auto`, `vc_auto`), pois a conversão em tempo real estava falhando e retornando tela preta. A URL original já entrega o vídeo em 1080p com boa performance.
 
