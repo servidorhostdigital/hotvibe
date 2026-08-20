@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:45
+- Corrigida resposta e congruência quando o usuário devolve a pergunta ("como voce chama"):
+  - Adicionadas palavras-chave de pergunta/saudação na lista de exclusão (`oie`, `como`, `voce`, `chama`, `seu`, `nome`, etc.) para não salvar perguntas ou saudações como nome do usuário.
+  - Se a modelo perguntar *"Como você se chama?"* e o usuário responder com *"como você chama"* ou *"e o seu?"*, ela agora responde diretamente que se chama Nicole, provocando no tom certo e emendando com a pergunta sobre a cidade de forma 100% natural.
+
 ## 20/08/2026 - 18:40
 - Aprimorada a inteligência contextual do agente no chat:
   - Adicionada detecção semântica para intenções: saudações (`isGreeting`), respostas afirmativas/de interesse (`isPositive`) e respostas negativas/hesitantes (`isNegative`).
