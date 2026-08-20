@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:50
+- Melhorada a experiência de usuário (UX) durante o carregamento do PIX:
+  - Como a API da FurionPay leva cerca de 15 segundos para processar e retornar o QR Code, foi adicionado um feedback visual avançado no modal.
+  - O texto simples "Gerando seu PIX..." foi substituído por uma interface mais profissional com spinner animado, textos dinâmicos ("Conectando ao banco...", "Gerando chave PIX segura e criptografada") e aviso de que pode levar alguns segundos, evitando que o usuário ache que o sistema travou e abandone a compra.
+
 ## 20/08/2026 - 18:45
 - Corrigida resposta e congruência quando o usuário devolve a pergunta ("como voce chama"):
   - Adicionadas palavras-chave de pergunta/saudação na lista de exclusão (`oie`, `como`, `voce`, `chama`, `seu`, `nome`, etc.) para não salvar perguntas ou saudações como nome do usuário.
