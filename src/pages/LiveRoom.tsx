@@ -426,38 +426,40 @@ export default function LiveRoom() {
           
           {/* Mensagens Flutuantes (Ocultas se for VIP) */}
           {!isVip && (
-            <div className="flex flex-col gap-2.5 mb-3 overflow-y-auto max-h-[42vh] sm:max-h-[46vh] mask-image-to-t touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 85%, transparent 100%)' }}>
+            <div className="flex flex-col gap-2 mb-2 sm:mb-2.5 overflow-y-auto max-h-[46vh] sm:max-h-[50vh] mask-image-to-t touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 85%, transparent 100%)' }}>
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.isModel ? 'justify-start' : 'justify-end'} w-full`}>
-                  <div className={`backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg max-w-[88%] sm:max-w-[82%] w-fit ${msg.isModel ? 'bg-[#18181b]/85 border border-white/10 rounded-bl-sm' : 'bg-[#f43f8e] rounded-br-sm'}`}>
+                  <div className={`backdrop-blur-md rounded-2xl p-2.5 sm:p-3 shadow-lg max-w-[85%] sm:max-w-[78%] w-fit ${msg.isModel ? 'bg-[#18181b]/85 border border-white/10 rounded-bl-sm' : 'bg-[#f43f8e] rounded-br-sm'}`}>
                     {msg.isModel && (
-                      <div className="text-[11px] font-bold mb-1 uppercase tracking-wide text-[#ff4b4b]">
+                      <div className="text-[10.5px] font-bold mb-1 uppercase tracking-wide text-[#ff4b4b]">
                         {msg.name}
                       </div>
                     )}
                     
                     {msg.previewUrl && msg.previewType === 'video' && (
-                      <video 
-                        src={msg.previewUrl} 
-                        className="rounded-xl mb-2 w-full max-w-[240px] sm:max-w-[280px]" 
-                        autoPlay 
-                        muted 
-                        loop 
-                        playsInline 
-                      />
+                      <div className="relative w-full max-w-[170px] sm:max-w-[200px] aspect-[4/3] rounded-xl overflow-hidden mb-1.5 bg-black/50">
+                        <video 
+                          src={msg.previewUrl} 
+                          className="w-full h-full object-cover rounded-xl" 
+                          autoPlay 
+                          muted 
+                          loop 
+                          playsInline 
+                        />
+                      </div>
                     )}
                     
-                    <div className="text-white text-[13.5px] sm:text-[14.5px] leading-relaxed break-words whitespace-normal font-normal">
+                    <div className="text-white text-[12.5px] sm:text-[13.5px] leading-snug break-words whitespace-normal font-normal">
                       {msg.text}
                     </div>
                     
                     {msg.previewInfo && (
-                      <div className="mt-2 pt-2 border-t border-white/10 flex flex-col gap-2">
+                      <div className="mt-1.5 pt-1.5 border-t border-white/10 flex flex-col gap-1.5">
                         <div>
-                          <p className="text-[11px] text-pink-400 font-bold">
+                          <p className="text-[10px] sm:text-[10.5px] text-pink-400 font-bold">
                             🔥 {msg.previewInfo.remaining > 0 ? `Ainda restam ${msg.previewInfo.remaining} prévia${msg.previewInfo.remaining > 1 ? 's' : ''}!` : 'Essa foi sua última prévia!'}
                           </p>
-                          <p className="text-[10px] text-zinc-400 mt-0.5">
+                          <p className="text-[9.5px] text-zinc-400">
                             No VIP eu mostro tudo sem limites 💋
                           </p>
                         </div>
@@ -465,7 +467,7 @@ export default function LiveRoom() {
                         {/* CTA Direto para o VIP */}
                         <button
                           onClick={() => setShowVipModal(true)}
-                          className="w-full bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 active:scale-95 text-white font-black text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-transform"
+                          className="w-full bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 active:scale-95 text-white font-black text-[11px] py-1.5 px-2.5 rounded-lg flex items-center justify-center gap-1 shadow-md transition-transform"
                         >
                           <span>💦</span> VAMOS GOZAR JUNTINHO AMOR 🔥
                         </button>
