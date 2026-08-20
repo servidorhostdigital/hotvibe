@@ -1,5 +1,8 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:20
+- Restaurado o design original dos ícones de chamada (estilo clássico WhatsApp/iOS) em `Criativo/gerador-story.html`, desenhados com precisão vetorial no Canvas HD.
+
 ## 20/08/2026 - 11:15
 - Refatoração completa do gerador de criativos (`Criativo/gerador-story.html`) usando Canvas nativo:
   - Resolução nativa em Full HD (1080x1920 para Story, 1080x1080 para Feed).
