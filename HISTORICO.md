@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:40
+- Ajustado o layout em `Criativo/gerador-story.html`:
+  - Aumentada a largura máxima do container principal (`max-w-5xl` para `max-w-6xl`).
+  - Alterada a proporção das colunas no desktop para 50/50 (`lg:col-span-6` para controles e visualização), deixando o bloco de configurações mais largo e responsivo.
+
 ## 20/08/2026 - 11:35
 - Aperfeiçoada a animação dos botões "Recusar" e "Atender" em `Criativo/gerador-story.html`:
   - Adicionado efeito de brilho pulsante, leve respiração de escala e ondas sonares circulares em volta dos botões simulando chamada ativa.
