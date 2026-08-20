@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:35
+- Otimizado o tamanho dos cards de prévia no chat:
+  - Reduzido o tamanho do vídeo da prévia (`max-w-[170px] sm:max-w-[200px]` e `aspect-[4/3]`) com visual mais compacto.
+  - Reduzido o padding interno e os tamanhos de fonte do texto e botão CTA (`text-[11px]` e `py-1.5`) para não ocupar a tela inteira em celulares.
+  - Aumentado o espaço útil da lista de mensagens (`max-h-[46vh] sm:max-h-[50vh]`), garantindo 100% de responsividade sem empurrar os botões para fora do campo de visão.
+
 ## 20/08/2026 - 18:30
 - Corrigida extração do nome do usuário no chat:
   - Ignoradas palavras de saudação como "oi", "olá", "eai", "opa", etc., para não capturar "Oi" como se fosse o nome do usuário.
