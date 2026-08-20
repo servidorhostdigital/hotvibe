@@ -55,7 +55,7 @@ export default function LiveRoom() {
   const [previewsLeft, setPreviewsLeft] = useState(2)
   const [showPreviewButton, setShowPreviewButton] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [messages, setMessages] = useState<Array<{
     id: number | string;
     name: string;

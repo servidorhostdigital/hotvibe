@@ -1,5 +1,8 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 12:30
+- Corrigido erro de build na Vercel (`Cannot find namespace 'NodeJS'`) no arquivo `LiveRoom.tsx`, alterando a tipagem do `useRef` de `NodeJS.Timeout` para `ReturnType<typeof setTimeout>`.
+
 ## 20/08/2026 - 12:25
 - Atualizado o favicon para utilizar a nova imagem `images/favicon.png` tanto no build principal quanto na aplicação Vite (`/favicon.png`).
 
