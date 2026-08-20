@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:15
+- Adicionada inteligência de memória de contexto no chat (Skill de Agente):
+  - O chat agora memoriza o nome do usuário em um estado global (`userName`).
+  - Se o usuário perguntar o nome da modelo *após* já ter dito o dele, ela responde usando o nome dele (ex: *"você pode me chamar como quiser, João 😈🔥"*), sem perguntar o nome de novo.
+  - Se ele perguntar o nome dela *antes* de dizer o dele, ela responde e pergunta o nome dele, ajustando o fluxo (`chatStep = 1`) para que a próxima pergunta seja sobre a cidade, mantendo a coerência da conversa.
+
 ## 20/08/2026 - 18:10
 - Adicionado botão de CTA dentro do card de prévia do chat:
   - Botão destacado com gradiente: `💦 VAMOS GOZAR JUNTINHO AMOR 🔥` que abre diretamente o modal VIP para conversão imediata do usuário.

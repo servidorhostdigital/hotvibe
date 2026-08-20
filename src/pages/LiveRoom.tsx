@@ -55,6 +55,7 @@ export default function LiveRoom() {
   const [previewsLeft, setPreviewsLeft] = useState(2)
   const [showPreviewButton, setShowPreviewButton] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
+  const [userName, setUserName] = useState<string | null>(null) // Guarda o nome do usuário se ele já informou
   const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [messages, setMessages] = useState<Array<{
     id: number | string;
@@ -207,6 +208,29 @@ export default function LiveRoom() {
     // Lógica de respostas dinâmicas baseadas no contexto da mensagem do usuário
     let responseText = ''
 
+    // Função auxiliar para extrair o nome do usuário
+    const extractName = (msg: string) => {
+      const lowerMsg = msg.toLowerCase()
+      let extracted = ''
+      const words = msg.split(' ')
+      if (words.length <= 2) {
+        extracted = words[0]
+      } else if (lowerMsg.includes('sou o') || lowerMsg.includes('sou a')) {
+        const match = lowerMsg.match(/sou [oa] (\w+)/)
+        if (match) extracted = match[1]
+      } else if (lowerMsg.includes('nome é') || lowerMsg.includes('chamo')) {
+        const match = lowerMsg.match(/(?:nome é|chamo) (\w+)/)
+        if (match) extracted = match[1]
+      }
+      return extracted ? extracted.charAt(0).toUpperCase() + extracted.slice(1) : null
+    }
+
+    // Tenta extrair o nome em qualquer mensagem se ainda não tivermos
+    if (!userName) {
+      const extracted = extractName(userMessage)
+      if (extracted) setUserName(extracted)
+    }
+
     // Se o usuário perguntar o nome dela em qualquer momento
     const isAskingHerName = userMessageLower.includes('seu nome') || 
                             userMessageLower.includes('qual seu nome') || 
@@ -219,7 +243,13 @@ export default function LiveRoom() {
                             userMessageLower.includes('quem é vc')
 
     if (isAskingHerName) {
-      responseText = 'Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, amor 😈🔥 E você, como se chama?'
+      if (userName) {
+        responseText = `Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, ${userName} 😈🔥`
+      } else {
+        responseText = 'Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, amor 😈🔥 E você, como se chama?'
+        // Força o chatStep para 1 para que a próxima resposta seja a de cidade
+        setChatStep(1)
+      }
     } else if (chatStep === 0) {
       setChatStep(1)
       
@@ -228,22 +258,10 @@ export default function LiveRoom() {
     } else if (chatStep === 1) {
       setChatStep(2)
       
-      // Tenta extrair o nome se o usuário digitou algo como "sou o joão" ou "meu nome é carlos"
-      let userName = ''
-      const words = userMessage.split(' ')
-      if (words.length <= 2) {
-        userName = words[0] // Se digitou só o nome
-      } else if (userMessageLower.includes('sou o') || userMessageLower.includes('sou a')) {
-        const match = userMessageLower.match(/sou [oa] (\w+)/)
-        if (match) userName = match[1]
-      } else if (userMessageLower.includes('nome é') || userMessageLower.includes('chamo')) {
-        const match = userMessageLower.match(/(?:nome é|chamo) (\w+)/)
-        if (match) userName = match[1]
-      }
+      const currentName = userName || extractName(userMessage) || 'amor'
+      if (!userName && currentName !== 'amor') setUserName(currentName)
 
-      const nameCapitalized = userName ? userName.charAt(0).toUpperCase() + userName.slice(1) : 'amor'
-
-      responseText = `Nossa, ${nameCapitalized}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
+      responseText = `Nossa, ${currentName}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
       
     } else if (chatStep === 2) {
       setChatStep(3)
