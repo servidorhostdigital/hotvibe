@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:55
+- Otimizada a entrega do vídeo via CDN Cloudinary mantendo máxima qualidade e velocidade:
+  - Aplicados parâmetros de otimização de alta fidelidade na URL do Cloudinary: `q_auto:best,vc_auto,f_auto`.
+  - Garante carregamento instantâneo via CDN global sem sobrecarregar a Vercel com arquivo pesado local e entrega o codec/formato com a melhor resolução e nitidez possível para cada dispositivo.
+
 ## 20/08/2026 - 17:50
 - Otimizada a qualidade e nitidez do vídeo principal:
   - Alterada a fonte do vídeo de stream comprimido externo para o arquivo nativo em alta resolução `/video.mp4` (71MB em qualidade original 1080p).
