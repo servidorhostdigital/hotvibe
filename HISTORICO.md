@@ -305,3 +305,12 @@
 - Ativada a chamada real para a API MonsterPay em todos os ambientes (removido fallback de mock em localhost):
   - Agora o PIX gerado é sempre o código real da MonsterPay emitido via chaves da API.
   - O polling de status ativo para conferir pagamentos reais em tempo real.
+
+## 19/08/2026 - 22:42
+- Removido o botão de simulação de pagamento (preview) do modal de PIX para evitar confusão em produção.
+
+## 19/08/2026 - 22:45
+- Adicionadas mensagens flutuantes de chat no topo esquerdo quando o PIX é gerado:
+  - 'Oii bebê, tô te esperando aqui 😈'
+  - 'Assim que você pagar eu faço TUDO com você 🔥'
+  - Estilização com avatar com a inicial da modelo, fundo semi-transparente com blur e animação suave de entrada.

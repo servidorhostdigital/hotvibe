@@ -38,6 +38,25 @@ export const PixModal: React.FC<PixModalProps> = ({
         onClick={onClose}
       />
 
+      {/* Mensagens Flutuantes (Aparecem apenas quando o PIX é gerado) */}
+      {pixData && !loading && !error && (
+        <div className="absolute top-10 left-4 z-20 flex flex-col gap-3 animate-in fade-in slide-in-from-left-4 duration-500">
+          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm border border-zinc-800/50 rounded-full py-2 px-4 w-fit">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] flex items-center justify-center text-[10px] font-bold text-white">
+              {modelName.charAt(0)}
+            </div>
+            <span className="text-white text-xs font-medium">Oii bebê, tô te esperando aqui 😈</span>
+          </div>
+          
+          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm border border-zinc-800/50 rounded-full py-2 px-4 w-fit animate-in fade-in slide-in-from-left-4 duration-500 delay-300 fill-mode-backwards">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] flex items-center justify-center text-[10px] font-bold text-white">
+              {modelName.charAt(0)}
+            </div>
+            <span className="text-white text-xs font-medium">Assim que você pagar eu faço TUDO com você 🔥</span>
+          </div>
+        </div>
+      )}
+
       {/* Modal Container */}
       <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative z-10 animate-in zoom-in-95 duration-200 text-center">
         
@@ -123,18 +142,6 @@ export const PixModal: React.FC<PixModalProps> = ({
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span>Aguardando pagamento...</span>
             </div>
-
-            {/* Botão para simular sucesso em dev */}
-            {onSimulateSuccess && (
-              <div className="mt-6 pt-4 border-t border-zinc-800/80">
-                <button
-                  onClick={onSimulateSuccess}
-                  className="text-[11px] text-zinc-500 hover:text-zinc-300 underline transition"
-                >
-                  ✓ Simular pagamento pago (preview)
-                </button>
-              </div>
-            )}
           </>
         ) : null}
 
