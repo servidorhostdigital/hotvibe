@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:50
+- Otimizada a qualidade e nitidez do vídeo principal:
+  - Alterada a fonte do vídeo de stream comprimido externo para o arquivo nativo em alta resolução `/video.mp4` (71MB em qualidade original 1080p).
+  - Suavizada a camada de gradiente escuro (`from-black/25` e `to-black/75`), reduzindo o aspecto opaco/embaçado sobre a imagem.
+
 ## 20/08/2026 - 17:45
 - Ajustes visuais na caixa de mensagem do chat:
   - Elevada a posição do campo (`mb-2 sm:mb-3`) para não colar na borda inferior do dispositivo.

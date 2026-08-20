@@ -376,7 +376,7 @@ export default function LiveRoom() {
         <div className="absolute inset-0 z-0">
           <video 
             ref={videoRef}
-            src="https://res.cloudinary.com/hlsmqrui/video/upload/v1787232374/video.mp4" 
+            src="/video.mp4" 
             autoPlay 
             loop 
             muted 
@@ -386,7 +386,7 @@ export default function LiveRoom() {
           />
           
           {/* Overlay escuro no topo e na base para dar contraste aos textos */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent via-50% to-black/80 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent via-50% to-black/75 pointer-events-none"></div>
         </div>
 
         {/* Overlay de Blur quando o VIP Modal está aberto */}
