@@ -188,7 +188,7 @@ export default function LiveRoom() {
   }
 
   const handleSendMessage = () => {
-    if (!inputValue.trim() || activeOffer || showVipModal) return
+    if (!inputValue.trim()) return
 
     const userMessage = inputValue.trim()
     const userMessageLower = userMessage.toLowerCase()
@@ -468,12 +468,10 @@ export default function LiveRoom() {
             onKeyDown={handleKeyPress}
             placeholder="Converse com a Nicole Oliveira..." 
             className="bg-transparent border-none outline-none text-[15px] w-full text-white placeholder:text-zinc-500"
-            disabled={!!activeOffer || showVipModal}
           />
           <button 
             className="text-zinc-400 hover:text-white transition p-1 shrink-0"
             onClick={handleSendMessage}
-            disabled={!!activeOffer || showVipModal}
           >
             <Send size={18} />
           </button>

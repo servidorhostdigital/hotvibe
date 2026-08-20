@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 12:15
+- Corrigido bloqueio de digitação no chat em `live-funnel/src/pages/LiveRoom.tsx`:
+  - Removido o atributo `disabled` condicional do input e do botão de envio que travava o chat quando um gatilho de oferta ou término de prévia acontecia.
+  - Agora o campo de digitação fica permanentemente ativo e responsivo para o usuário conversar a qualquer momento.
+
 ## 20/08/2026 - 12:10
 - Corrigido travamento de estado de inatividade no chat em `live-funnel/src/pages/LiveRoom.tsx`:
   - Adicionado listener de `visibilitychange` para pausar timers quando o usuário sai da aba e reiniciar suavemente quando ele retorna, garantindo que o chat continue 100% responsivo e editável sem necessidade de recarregar a página.
