@@ -336,7 +336,7 @@ export default function LiveRoom() {
   }
 
   return (
-    <div className="flex justify-center items-center h-[100dvh] w-full bg-[#07070a] overflow-hidden">
+    <div className="fixed inset-0 flex justify-center items-center h-[100dvh] w-full bg-[#07070a] overflow-hidden select-none touch-none">
       {/* Container Responsivo Centralizado (Mobile em Desktop/Tablet ou Full em Celulares) */}
       <div className="flex flex-col h-[100dvh] w-full max-w-[480px] md:max-w-[460px] lg:max-w-[440px] md:h-[92vh] md:max-h-[920px] md:rounded-[36px] bg-black relative overflow-hidden font-sans md:border md:border-white/10 md:shadow-[0_0_50px_rgba(0,0,0,0.8)]">
         
@@ -388,7 +388,7 @@ export default function LiveRoom() {
           
           {/* Mensagens Flutuantes (Ocultas se for VIP) */}
           {!isVip && (
-            <div className="flex flex-col gap-2.5 mb-3 overflow-y-auto max-h-[42vh] sm:max-h-[46vh] mask-image-to-t [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 85%, transparent 100%)' }}>
+            <div className="flex flex-col gap-2.5 mb-3 overflow-y-auto max-h-[42vh] sm:max-h-[46vh] mask-image-to-t touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 85%, transparent 100%)' }}>
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.isModel ? 'justify-start' : 'justify-end'} w-full`}>
                   <div className={`backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg max-w-[88%] sm:max-w-[82%] w-fit ${msg.isModel ? 'bg-[#18181b]/85 border border-white/10 rounded-bl-sm' : 'bg-[#f43f8e] rounded-br-sm'}`}>
@@ -490,8 +490,8 @@ export default function LiveRoom() {
 
       {/* Modal VIP (Paywall Original LiveCan) */}
       {showVipModal && (
-        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 animate-in zoom-in-95 duration-200 shadow-2xl relative [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4 touch-none">
+          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 animate-in zoom-in-95 duration-200 shadow-2xl relative touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             
             <button 
               onClick={() => setShowVipModal(false)}
@@ -570,9 +570,9 @@ export default function LiveRoom() {
 
       {/* Modal Dinâmico de Ofertas (Upsells) */}
       {activeOffer && activeOffer.id !== 'front' && (
-        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4">
+        <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4 touch-none">
           <div className="absolute inset-0 backdrop-blur-xl bg-black/60 z-10 transition-all duration-500"></div>
-          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 shadow-2xl z-20 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 shadow-2xl z-20 touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             
             <div className="text-center mb-5 sm:mb-6">
               <div className={`inline-block ${activeOffer.id === 'upsell_reconexao' ? 'bg-[#ff9900] text-black font-extrabold' : 'bg-[#00d26a] text-white font-bold'} text-[10px] px-3 py-1 rounded-full mb-2.5 uppercase tracking-wider`}>

@@ -29,7 +29,7 @@ export const PixModal: React.FC<PixModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4">
+    <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-3 sm:p-4 touch-none">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/80 backdrop-blur-md transition-all"
@@ -56,7 +56,7 @@ export const PixModal: React.FC<PixModalProps> = ({
       )}
 
       {/* Modal Container */}
-      <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 shadow-2xl relative z-10 animate-in zoom-in-95 duration-200 text-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 shadow-2xl relative z-10 animate-in zoom-in-95 duration-200 text-center touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         
         {/* Botão Fechar */}
         <button 

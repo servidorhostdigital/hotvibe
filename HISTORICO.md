@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:15
+- Bloqueado o deslocamento/arrasto da página no mobile (efeito "bounce" e scroll indevido):
+  - Adicionado `fixed inset-0` e `touch-none` na raiz da página para fixar a tela no viewport.
+  - Aplicado `touch-pan-y` e `overscroll-contain` especificamente nas listas roláveis (mensagens do chat e modais), permitindo rolagem fluida apenas onde há conteúdo sem movimentar o background ou a janela inteira.
+  - Configurado `overscroll-behavior-y: none` global no `index.css`.
+
 ## 20/08/2026 - 17:10
 - Ajustada responsividade total para todos os tipos de dispositivos (Desktop, Tablet e Mobile):
   - No Desktop e Tablet: container centralizado em formato de frame simulando smartphone moderno (`max-w-[480px]`, cantos arredondados, borda sutil e sombra), garantindo que a proporção vertical (estilo live/stories) e os elementos de vídeo e chat não fiquem esticados ou distorcidos em telas ultra-wide/grandes.

@@ -11,6 +11,8 @@ body {
   background-color: var(--color-dark);
   color: white;
   font-family: 'Inter', sans-serif;
+  overscroll-behavior-y: none; /* Previne o efeito de "bounce" no scroll do iOS/Android */
+  touch-action: pan-y; /* Permite apenas scroll vertical, bloqueando gestos horizontais ou de zoom */
 }
 
 /* Custom Scrollbar */
