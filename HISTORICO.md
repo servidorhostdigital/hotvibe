@@ -1,5 +1,35 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:15
+- Refatoração completa do gerador de criativos (`Criativo/gerador-story.html`) usando Canvas nativo:
+  - Resolução nativa em Full HD (1080x1920 para Story, 1080x1080 para Feed).
+  - Animação de zoom suave (Ken Burns) e pulso nos botões renderizada diretamente no Canvas.
+  - Exportação de vídeo MP4/WebM sem cortes ou distorções nos textos.
+  - Exportação de imagem PNG em alta qualidade.
+
+## 20/08/2026 - 11:10
+- Corrigido o efeito de zoom na gravação de vídeo em `Criativo/gerador-story.html`:
+  - O zoom agora é aplicado **apenas na imagem de fundo**.
+  - Os textos, botões e gradientes permanecem fixos e nítidos por cima da imagem, evitando cortes e distorções na interface durante a animação.
+
+## 20/08/2026 - 11:05
+- Atualizada a função de gerar vídeo em `Criativo/gerador-story.html`:
+  - Agora você pode subir apenas a **imagem (foto)** da modelo.
+  - Ao clicar em **"Gravar Vídeo"**, o gerador aplica um efeito de zoom/movimento suave (Ken Burns) e renderiza um vídeo animado de 5 segundos pronto para download no formato de vídeo (MP4/WebM), além do botão padrão de baixar em PNG.
+
+## 20/08/2026 - 11:00
+- Adicionado suporte a vídeo e gravação no gerador de criativos (`Criativo/gerador-story.html`):
+  - Suporte a upload de vídeo direto para o background (a modelo se movimenta em tempo real).
+  - Botão de gravação de vídeo de 5 segundos em formato de vídeo para download direto.
+
+## 20/08/2026 - 10:55
+- Adicionado suporte a múltiplos formatos no gerador de criativos (`Criativo/gerador-story.html`):
+  - Formato Story / Reels / TikTok (1080x1920 - 9:16).
+  - Formato Feed / Post (1080x1080 - 1:1 quadrado).
+
+## 20/08/2026 - 10:52
+- Realizado commit e push das alterações (ajuste de delay de digitação, título e favicon) para o repositório no GitHub.
+
 ## 20/08/2026 - 10:50
 - Atualizado o título da página para "Hotlive Ao vivo" em [index.html](live-funnel/index.html).
 - Criado e adicionado um favicon de fogo (🔥) em SVG para combinar com o estilo "hot".
