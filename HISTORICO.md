@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 12:00
+- Aplicadas diretrizes de segurança da skill `JH7-MESTRE-SEGURANÇA`:
+  - Implementada função `sanitizeFilename` em `Criativo/gerador-story.html` para tratamento e sanitização estrita de nomes de arquivos baixados (evitando caracteres ilegais, injeções de caminho e normalizando acentuação).
+
 ## 20/08/2026 - 11:55
 - Adicionado controle de "Escurecimento / Sombra" em `Criativo/gerador-story.html`:
   - Permite ajustar livremente a intensidade das sombras e gradientes escuros sobre a foto (de 0% desativado até 100%).
