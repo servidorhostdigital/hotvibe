@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:35
+- Corrigido travamento indesejado do vídeo durante a conversa no chat:
+  - Removida a chamada `videoRef.current.pause()` que era acionada no passo final da conversa (passo 5).
+  - O vídeo da live agora continua rodando ininterruptamente enquanto o usuário interage e assiste às prévias.
+
 ## 20/08/2026 - 17:28
 - Atualizado o estilo visual da caixa de entrada do chat para o formato do chat do VS Code:
   - Bordas arredondadas modernas (`rounded-xl` em vez de formato pill/cápsula).

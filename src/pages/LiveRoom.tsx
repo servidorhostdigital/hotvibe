@@ -253,7 +253,7 @@ export default function LiveRoom() {
         responseText = 'Vou tirar minha calcinha bem devagar e abrir a câmera só pra você... Quer me ver todinha ao vivo? 🤤'
       }
     } else if (chatStep === 5) {
-      // Adiciona uma mensagem final antes de travar o chat aguardando a prévia/VIP
+      // Adiciona uma mensagem final antes de liberar o botão de prévia
       responseText = 'Clica no botão aqui embaixo pra ver uma provinha do que eu vou fazer com você... 🔥'
       
       // Na sexta mensagem, exibe o botão de prévia se houver
@@ -262,9 +262,7 @@ export default function LiveRoom() {
       
       setTimeout(() => {
         if (!unlockedOffers.includes('front')) {
-          if (videoRef.current) videoRef.current.pause()
-          
-          // Se ainda tem prévias, mostra o botão de prévia
+          // Se ainda tem prévias, mostra o botão de prévia sem pausar o vídeo principal
           if (previewsLeft > 0) {
             setShowPreviewButton(true)
           }
