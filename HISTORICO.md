@@ -1,5 +1,8 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 12:25
+- Atualizado o favicon para utilizar a nova imagem `images/favicon.png` tanto no build principal quanto na aplicação Vite (`/favicon.png`).
+
 ## 20/08/2026 - 12:20
 - Repositório remoto do GitHub reconfigurado para `https://github.com/servidorhostdigital/hotvibe.git`.
 - Push completo realizado com sucesso na branch `main`.
