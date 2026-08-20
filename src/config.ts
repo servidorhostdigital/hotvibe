@@ -6,7 +6,7 @@ export const CONFIG = {
   // 1. CREDENCIAIS DA FURIONPAY (https://api.furionpay.com/integration)
   furionpay: {
     apiUrl: 'https://pmxpimpctlqhpgjibnrs.supabase.co/functions/v1',
-    apiKey: 'fp_live_ustZF0qYEjDcDdmNxZIrGIrcFwjU5KNL' // Cole sua API Key (ex: fp_live_...) aqui
+    apiKey: 'fp_live_MDMQNgPdlK5D2hQqIXQ4riPht7joEd' // Cole sua API Key (ex: fp_live_...) aqui
   },
 
   // 2. CONFIGURAÇÃO DE DADOS PADRÃO DO CLIENTE
@@ -14,7 +14,7 @@ export const CONFIG = {
     name: 'Cliente Live',
     email: 'cliente@live.com',
     phone: '11988887777',
-    document: '12345678900'
+    document: '15438969876' // CPF válido gerado para testes
   },
 
   // 3. OFERTAS E VALORES DO FUNIL (em R$)
