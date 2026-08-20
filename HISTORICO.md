@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 17:45
+- Ajustes visuais na caixa de mensagem do chat:
+  - Elevada a posição do campo (`mb-2 sm:mb-3`) para não colar na borda inferior do dispositivo.
+  - Borda padrão mais visível e nítida mesmo em repouso (`border-white/20`).
+  - Aumentado o tamanho do ícone de envio de 18px para 22px (`<Send size={22} />`).
+
 ## 20/08/2026 - 17:40
 - Adicionada resposta inteligente no chat quando o usuário pergunta o nome da modelo:
   - Detecta variações de perguntas como "qual seu nome", "como você se chama", "quem é você", etc.
