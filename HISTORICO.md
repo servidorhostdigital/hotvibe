@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:30
+- Corrigida extração do nome do usuário no chat:
+  - Ignoradas palavras de saudação como "oi", "olá", "eai", "opa", etc., para não capturar "Oi" como se fosse o nome do usuário.
+
 ## 20/08/2026 - 18:25
 - Atualizada a chave da API da FurionPay e corrigida validação do CPF:
   - Inserida a nova API Key ativa no `config.ts`.
