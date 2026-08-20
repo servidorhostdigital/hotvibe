@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:10
+- Adicionado botão de CTA dentro do card de prévia do chat:
+  - Botão destacado com gradiente: `💦 VAMOS GOZAR JUNTINHO AMOR 🔥` que abre diretamente o modal VIP para conversão imediata do usuário.
+
 ## 20/08/2026 - 18:05
 - Corrigido travamento do vídeo aos 60 segundos:
   - O vídeo estava pausando automaticamente quando atingia 1 minuto (gatilho da oferta `front`), o que interrompia a experiência do usuário enquanto ele ainda estava conversando no chat.

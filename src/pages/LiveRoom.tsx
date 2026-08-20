@@ -428,13 +428,23 @@ export default function LiveRoom() {
                     </div>
                     
                     {msg.previewInfo && (
-                      <div className="mt-2 pt-2 border-t border-white/10">
-                        <p className="text-[11px] text-pink-400 font-bold">
-                          🔥 {msg.previewInfo.remaining > 0 ? `Ainda restam ${msg.previewInfo.remaining} prévia${msg.previewInfo.remaining > 1 ? 's' : ''}!` : 'Essa foi sua última prévia!'}
-                        </p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5">
-                          No VIP eu mostro tudo sem limites 💋
-                        </p>
+                      <div className="mt-2 pt-2 border-t border-white/10 flex flex-col gap-2">
+                        <div>
+                          <p className="text-[11px] text-pink-400 font-bold">
+                            🔥 {msg.previewInfo.remaining > 0 ? `Ainda restam ${msg.previewInfo.remaining} prévia${msg.previewInfo.remaining > 1 ? 's' : ''}!` : 'Essa foi sua última prévia!'}
+                          </p>
+                          <p className="text-[10px] text-zinc-400 mt-0.5">
+                            No VIP eu mostro tudo sem limites 💋
+                          </p>
+                        </div>
+
+                        {/* CTA Direto para o VIP */}
+                        <button
+                          onClick={() => setShowVipModal(true)}
+                          className="w-full bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 active:scale-95 text-white font-black text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-transform"
+                        >
+                          <span>💦</span> VAMOS GOZAR JUNTINHO AMOR 🔥
+                        </button>
                       </div>
                     )}
                   </div>
