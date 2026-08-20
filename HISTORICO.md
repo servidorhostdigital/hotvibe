@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:30
+- Ajustado os textos e largura dos botões no cabeçalho em `Criativo/gerador-story.html`:
+  - "Baixar Img" e "Baixar Vídeo (5s)" com maior largura e espaçamento.
+
 ## 20/08/2026 - 11:25
 - Ajustado o layout em `Criativo/gerador-story.html`:
   - Botões de ação rápida ("PNG" e "Vídeo (5s)") posicionados alinhados diretamente na frente do cabeçalho "Configurações" para melhor usabilidade em telas menores.
