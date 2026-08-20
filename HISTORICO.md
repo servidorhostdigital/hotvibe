@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 19:15
+- Corrigido o filtro de extração de nome no `chatBrain.ts`:
+  - Adicionada detecção inteligente com limpeza de repetições de caracteres (ex: `oiee`, `oieee`, `oiii`, `olaaa`).
+  - O sistema agora só aceita extração livre de nome se estiver no passo em que ela explicitamente perguntou o nome do usuário (`chatStep === 1`) ou se o usuário usar frases afirmativas de identificação ("meu nome é...", "sou o...").
+  - Evita que qualquer saudação casual com repetição de letras seja capturada como nome próprio.
+
 ## 20/08/2026 - 19:10
 - Criado o motor de inteligência e semântica de chat `chatBrain.ts` (sem dependência de IA externa):
   - Criado arquivo [live-funnel/src/utils/chatBrain.ts](live-funnel/src/utils/chatBrain.ts) com suporte a:

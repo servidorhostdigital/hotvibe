@@ -22,8 +22,8 @@ export interface ChatDecision {
 }
 
 // Dicionários semânticos
-const GREETINGS = ['oi', 'oie', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom dia', 'boa tarde', 'boa noite', 'salve', 'fala', 'coé', 'opa eai']
-const POSITIVES = ['sim', 'quero', 'estou', 'to', 'tô', 'bora', 'vamos', 'claro', 'com certeza', 'manda', 'mostra', 'pode ser', 'adoro', 'demais', 'obvio', 'óbvio', 'agora', 'topo', 'com ctz', 'ss', 'simm']
+const GREETINGS = ['oi', 'oie', 'oiee', 'oieee', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom dia', 'boa tarde', 'boa noite', 'salve', 'fala', 'coé', 'opa eai', 'hello', 'hey', 'hi']
+const POSITIVES = ['sim', 'quero', 'estou', 'to', 'tô', 'bora', 'vamos', 'claro', 'com certeza', 'manda', 'mostra', 'pode ser', 'adoro', 'demais', 'obvio', 'óbvio', 'agora', 'topo', 'com ctz', 'ss', 'simm', 'simmm']
 const NEGATIVES = ['não', 'nao', 'nunca', 'jamais', 'nem', 'sai', 'não quero', 'nao quero', 'deixa', 'para', 'mentira', 'nn']
 const COMPLIMENTS = ['linda', 'gostosa', 'delicia', 'delícia', 'maravilhosa', 'perfeita', 'princesa', 'deusa', 'tesao', 'tesão', 'gata', 'maravilhosa', 'boazuda', 'deliciosa', 'sexy', 'perfeita']
 const CITIES_COMMON = ['sao paulo', 'são paulo', 'sp', 'rio', 'rio de janeiro', 'rj', 'bh', 'belo horizonte', 'curitiba', 'brasilia', 'brasília', 'salvador', 'fortaleza', 'recife', 'porto alegre', 'goiania', 'goiânia', 'manaus', 'campinas', 'florianopolis', 'florianópolis']
@@ -33,34 +33,52 @@ const ASKING_PAYMENT = ['como paga', 'quanto custa', 'valor', 'pix', 'como funci
 const ASKING_PHOTO_VIDEO = ['manda foto', 'manda video', 'manda nudes', 'manda nude', 'mostra a', 'tira a roupa', 'pelada', 'nua', 'mostra peito', 'mostra bct', 'foto', 'video', 'nudes', 'nude', 'previa', 'prévia']
 const SKEPTICAL = ['é gravado', 'é fake', 'é robô', 'e robo', 'bot', 'é de verdade', 'ao vivo mesmo', 'ta gravado', 'tá gravado', 'vc é real', 'voce é real']
 
+// Verifica se uma palavra é variação de saudação (ex: "oieee", "oii", "olaaa")
+function isGreetingWord(word: string): boolean {
+  const clean = word.toLowerCase().trim().replace(/(.)\1+/g, '$1') // remove todas repetições: "oieee" -> "oie", "oii" -> "oi"
+  return GREETINGS.includes(word.toLowerCase().trim()) || GREETINGS.includes(clean) || clean === 'oi' || clean === 'oie' || clean === 'ola' || clean === 'eae' || clean === 'opa'
+}
+
 export function processUserChat(userMessage: string, context: ChatContext): ChatDecision {
-  const msg = userMessage.trim().toLowerCase()
+  const rawMsg = userMessage.trim()
+  const msg = rawMsg.toLowerCase()
   const currentName = context.userName
 
-  // 1. Extração Inteligente de Nome
-  const extractName = (text: string): string | null => {
+  // 1. Extração Inteligente de Nome APENAS no passo correto ou com frases explícitas
+  const extractName = (text: string, step: number): string | null => {
     const lower = text.toLowerCase().trim()
-    const ignoreWords = [
-      ...GREETINGS, ...POSITIVES, ...NEGATIVES,
-      'como', 'voce', 'você', 'vc', 'chama', 'seu', 'nome', 'quem', 'e', 'é',
-      'aqui', 'tudo', 'bem', 'beleza', 'tranquilo', 'joia', 'mora', 'cidade', 'onde'
-    ]
+    const cleanWord = lower.replace(/(.)\1+/g, '$1')
 
+    // NUNCA extrai nome se for saudação, afirmação ou negação
+    if (isGreetingWord(lower) || isGreetingWord(cleanWord)) return null
+    if (GREETINGS.some(g => lower === g || lower.startsWith(g + ' ') || lower.endsWith(' ' + g))) return null
+    if (POSITIVES.some(p => lower === p)) return null
+    if (NEGATIVES.some(n => lower === n)) return null
+
+    // Padrões explícitos com alta certeza (funciona em qualquer passo)
     if (lower.includes('sou o ') || lower.includes('sou a ')) {
       const match = lower.match(/sou [oa] (\w+)/)
-      if (match) return capitalize(match[1])
+      if (match && !isGreetingWord(match[1])) return capitalize(match[1])
     }
     if (lower.includes('meu nome é ') || lower.includes('me chamo ') || lower.includes('chamo ')) {
       const match = lower.match(/(?:meu nome é|me chamo|chamo) (\w+)/)
-      if (match) return capitalize(match[1])
+      if (match && !isGreetingWord(match[1])) return capitalize(match[1])
     }
     
-    // Se for uma ou duas palavras curtas
-    const words = lower.split(/\s+/)
-    if (words.length <= 2) {
-      const validWord = words.find(w => w.length > 2 && !ignoreWords.includes(w))
-      if (validWord) return capitalize(validWord)
+    // Se o chat está no Passo 1 (ela ACABOU de perguntar "Como você se chama?"), aceitamos 1 ou 2 palavras como nome
+    if (step === 1) {
+      const words = lower.split(/\s+/).filter(w => w.length > 1)
+      const ignoreInStep1 = [
+        'como', 'voce', 'você', 'vc', 'chama', 'seu', 'nome', 'quem', 'e', 'é', 'o', 'a',
+        'me', 'meu', 'minha', 'sou', 'aqui', 'tudo', 'bem', 'beleza'
+      ]
+      
+      const potentialName = words.find(w => !isGreetingWord(w) && !ignoreInStep1.includes(w))
+      if (potentialName && potentialName.length >= 2) {
+        return capitalize(potentialName)
+      }
     }
+
     return null
   }
 
@@ -79,12 +97,12 @@ export function processUserChat(userMessage: string, context: ChatContext): Chat
 
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
 
-  const extractedName = !currentName ? extractName(userMessage) : null
+  const extractedName = !currentName ? extractName(userMessage, context.chatStep) : null
   const effectiveName = extractedName || currentName || 'amor'
   const extractedCity = extractCity(userMessage)
 
   // 3. Flags de Intenção
-  const hasGreeting = GREETINGS.some(g => msg === g || msg.startsWith(g + ' ') || msg.endsWith(' ' + g))
+  const hasGreeting = isGreetingWord(msg) || GREETINGS.some(g => msg === g || msg.startsWith(g + ' ') || msg.endsWith(' ' + g))
   const hasPositive = POSITIVES.some(p => msg.includes(p))
   const hasNegative = NEGATIVES.some(n => msg.includes(n))
   const hasCompliment = COMPLIMENTS.some(c => msg.includes(c))
