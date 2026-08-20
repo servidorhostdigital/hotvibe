@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:55
+- Adicionado controle de "Escurecimento / Sombra" em `Criativo/gerador-story.html`:
+  - Permite ajustar livremente a intensidade das sombras e gradientes escuros sobre a foto (de 0% desativado até 100%).
+  - Padrão reduzido para um valor suave (25%) para manter a imagem mais nítida e iluminada.
+
 ## 20/08/2026 - 11:50
 - Atualizado `Criativo/gerador-story.html`:
   - Removida imagem de placeholder externa inicial. O fundo agora permanece totalmente preto por padrão quando nenhuma foto for selecionada.
