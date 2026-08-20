@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:35
+- Aperfeiçoada a animação dos botões "Recusar" e "Atender" em `Criativo/gerador-story.html`:
+  - Adicionado efeito de brilho pulsante, leve respiração de escala e ondas sonares circulares em volta dos botões simulando chamada ativa.
+  - Pré-visualização ao vivo em tempo real ativada no canvas.
+
 ## 20/08/2026 - 11:30
 - Ajustado os textos e largura dos botões no cabeçalho em `Criativo/gerador-story.html`:
   - "Baixar Img" e "Baixar Vídeo (5s)" com maior largura e espaçamento.
