@@ -1,7 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { Send, Eye, Download } from 'lucide-react'
+import { buildUrlWithUtms, captureAndPersistUtms } from '../utils/utm'
+import { usePixCheckout } from '../hooks/usePixCheckout'
+import { PixModal } from '../components/PixModal'
 
-// Configuração das Ofertas (Funil de 4 etapas)
+// Configuração das Ofertas
 const OFFERS = [
   { 
     id: 'front', 
@@ -12,42 +16,48 @@ const OFFERS = [
     benefits: ['Câmera sem censura', 'Chat liberado', 'Áudio original'] 
   },
   { 
-    id: 'upsell_1', 
-    triggerTime: 300, // 5 minutos (Upsell 1)
-    title: 'Show Exclusivo', 
-    price: '19,90', 
-    copy: 'Você tá gostando? Que tal eu tirar essa blusinha pra você? Libere o show exclusivo agora.',
-    benefits: ['Tirar a blusa', 'Dança sensual', 'Foco em você'] 
+    id: 'upsell_reconexao', 
+    triggerTime: 450, // 7 minutos e 30 segundos (450s)
+    title: 'Conexão Perdida ⚠️', 
+    price: '9,90', 
+    badge: 'ESTABILIDADE DO SERVIDOR 📶',
+    copy: 'Sua conexão com a sala privada caiu por sobrecarga de tráfego. Pague a taxa de reconexão prioritária para continuar assistindo sem interrupções.',
+    benefits: ['Reconexão instantânea', 'Servidor prioritário anti-queda', 'Qualidade 1080p sem travamentos'] 
   },
   { 
-    id: 'upsell_2', 
-    triggerTime: 600, // 10 minutos (Upsell 2)
+    id: 'upsell_1', 
+    triggerTime: 600, // 10 minutos (Upsell 1 - Brinquedo)
     title: 'Controle o Brinquedo', 
     price: '29,90', 
     copy: 'Eu tô usando um brinquedinho... Quer assumir o controle dele e me fazer enlouquecer?',
     benefits: ['Controle do Lovense', 'Nível máximo liberado', 'Reações ao vivo'] 
   },
   { 
-    id: 'upsell_3', 
-    triggerTime: 900, // 15 minutos (Upsell 3)
-    title: 'WhatsApp Pessoal', 
+    id: 'upsell_2', 
+    triggerTime: 960, // 16 minutos (Upsell 2 - WhatsApp)
+    title: 'WhatsApp Privado', 
     price: '49,90', 
-    copy: 'Nossa live tá quase acabando... Quer meu número pessoal pra gente continuar no sigilo?',
-    benefits: ['Meu WhatsApp real', 'Fotos exclusivas no PV', 'Chamada de vídeo 1 a 1'] 
+    copy: 'Quer meu número pessoal pra gente continuar no sigilo? Ganhe uma chamada de vídeo grátis e fotos diárias.',
+    benefits: ['Meu WhatsApp real', 'Chamada de vídeo grátis', 'Fotos exclusivas diariamente'] 
   }
 ]
 
 export default function LiveRoom() {
+  const { slug } = useParams<{ slug: string }>()
+  const currentSlug = slug || 'nicole'
   const videoRef = useRef<HTMLVideoElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showAgeGate, setShowAgeGate] = useState(false)
   const [isVip, setIsVip] = useState(false)
   const [showVipModal, setShowVipModal] = useState(false)
+  const [showPixModal, setShowPixModal] = useState(false)
+  const [pendingPlan, setPendingPlan] = useState<string>('vip_total')
   const [chatStep, setChatStep] = useState(0)
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [previewsLeft, setPreviewsLeft] = useState(2)
   const [showPreviewButton, setShowPreviewButton] = useState(false)
+  const [sessionId] = useState(() => 'sess_' + Math.random().toString(36).substring(2, 12))
   const [messages, setMessages] = useState<Array<{
     id: number | string;
     name: string;
@@ -65,6 +75,17 @@ export default function LiveRoom() {
   const [unlockedOffers, setUnlockedOffers] = useState<string[]>([])
   const [activeOffer, setActiveOffer] = useState<typeof OFFERS[0] | null>(null)
 
+  // Hook do PIX Checkout
+  const pix = usePixCheckout({
+    slug: currentSlug,
+    sessionId: sessionId,
+    tracking: Object.fromEntries(new URLSearchParams(sessionStorage.getItem('captured_utms') || '')),
+    onSuccess: () => {
+      setShowPixModal(false)
+      handlePaymentSuccess()
+    }
+  })
+
   // Auto-scroll para a última mensagem
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -80,23 +101,44 @@ export default function LiveRoom() {
       offer => currentTime >= offer.triggerTime && !unlockedOffers.includes(offer.id)
     )
 
-    if (offerToTrigger && !activeOffer) {
+    // Só pausa e exibe a oferta se ela ainda não estiver ativa
+    if (offerToTrigger && activeOffer?.id !== offerToTrigger.id) {
       videoRef.current.pause()
       setActiveOffer(offerToTrigger)
     }
   }
 
   const handlePaymentSuccess = () => {
-    if (!activeOffer) return
+    setIsVip(true)
+    setShowVipModal(false)
+    setShowPreviewButton(false)
+
+    // Remove as mensagens/cards de prévia do chat quando o VIP é liberado
+    setMessages(prev => prev.filter(msg => !msg.previewUrl && !msg.previewInfo))
+
+    if (activeOffer) {
+      const currentOfferId = activeOffer.id
+      setUnlockedOffers(prev => [...prev, currentOfferId])
+      setActiveOffer(null)
+    } else {
+      // Se pagou o Front-end pelo modal VIP, avança o vídeo para 5 minutos (300s)
+      setUnlockedOffers(prev => [...prev, 'front'])
+      if (videoRef.current) {
+        videoRef.current.currentTime = 300 // Inicia a partir de 5 minutos
+      }
+    }
     
-    // Desbloqueia a oferta atual
-    setUnlockedOffers(prev => [...prev, activeOffer.id])
-    setActiveOffer(null)
-    
-    // Retoma o vídeo
+    // Retoma a reprodução do vídeo
     if (videoRef.current) {
       videoRef.current.play()
     }
+  }
+
+  const handleOpenPix = (valor: number, plano: string) => {
+    setPendingPlan(plano)
+    setShowVipModal(false)
+    setShowPixModal(true)
+    pix.generatePix(valor, plano)
   }
 
   const handleSendMessage = () => {
@@ -287,58 +329,60 @@ export default function LiveRoom() {
       {/* Área Inferior (Chat e Input) */}
       <div className="absolute bottom-0 left-0 w-full z-30 p-4 pb-6 sm:pb-8 max-w-lg mx-auto flex flex-col justify-end">
         
-        {/* Mensagens Flutuantes */}
-        <div className="flex flex-col gap-3 mb-4 overflow-y-auto max-h-[50vh] mask-image-to-t [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 80%, transparent 100%)' }}>
-          {messages.map((msg) => (
-            <div key={msg.id} className={`flex ${msg.isModel ? 'justify-start' : 'justify-end'} w-full`}>
-              <div className={`backdrop-blur-md rounded-2xl p-3.5 shadow-lg max-w-[90%] sm:max-w-[85%] w-fit ${msg.isModel ? 'bg-[#18181b]/80 border border-white/10 rounded-bl-sm' : 'bg-[#f43f8e] rounded-br-sm'}`}>
-                {msg.isModel && (
-                  <div className="text-[11px] font-bold mb-1 uppercase tracking-wide text-[#ff4b4b]">
-                    {msg.name}
+        {/* Mensagens Flutuantes (Ocultas se for VIP) */}
+        {!isVip && (
+          <div className="flex flex-col gap-3 mb-4 overflow-y-auto max-h-[50vh] mask-image-to-t [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maskImage: 'linear-gradient(to top, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 80%, transparent 100%)' }}>
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.isModel ? 'justify-start' : 'justify-end'} w-full`}>
+                <div className={`backdrop-blur-md rounded-2xl p-3.5 shadow-lg max-w-[90%] sm:max-w-[85%] w-fit ${msg.isModel ? 'bg-[#18181b]/80 border border-white/10 rounded-bl-sm' : 'bg-[#f43f8e] rounded-br-sm'}`}>
+                  {msg.isModel && (
+                    <div className="text-[11px] font-bold mb-1 uppercase tracking-wide text-[#ff4b4b]">
+                      {msg.name}
+                    </div>
+                  )}
+                  
+                  {msg.previewUrl && msg.previewType === 'video' && (
+                    <video 
+                      src={msg.previewUrl} 
+                      className="rounded-xl mb-2 w-full max-w-[280px]" 
+                      autoPlay 
+                      muted 
+                      loop 
+                      playsInline 
+                    />
+                  )}
+                  
+                  <div className="text-white text-[15px] leading-relaxed break-words whitespace-normal">
+                    {msg.text}
                   </div>
-                )}
-                
-                {msg.previewUrl && msg.previewType === 'video' && (
-                  <video 
-                    src={msg.previewUrl} 
-                    className="rounded-xl mb-2 w-full max-w-[280px]" 
-                    autoPlay 
-                    muted 
-                    loop 
-                    playsInline 
-                  />
-                )}
-                
-                <div className="text-white text-[15px] leading-relaxed break-words whitespace-normal">
-                  {msg.text}
+                  
+                  {msg.previewInfo && (
+                    <div className="mt-2 pt-2 border-t border-white/10">
+                      <p className="text-[11px] text-pink-400 font-bold">
+                        🔥 {msg.previewInfo.remaining > 0 ? `Ainda restam ${msg.previewInfo.remaining} prévia${msg.previewInfo.remaining > 1 ? 's' : ''}!` : 'Essa foi sua última prévia!'}
+                      </p>
+                      <p className="text-[10px] text-zinc-500 mt-0.5">
+                        No VIP eu mostro tudo sem limites 💋
+                      </p>
+                    </div>
+                  )}
                 </div>
-                
-                {msg.previewInfo && (
-                  <div className="mt-2 pt-2 border-t border-white/10">
-                    <p className="text-[11px] text-pink-400 font-bold">
-                      🔥 {msg.previewInfo.remaining > 0 ? `Ainda restam ${msg.previewInfo.remaining} prévia${msg.previewInfo.remaining > 1 ? 's' : ''}!` : 'Essa foi sua última prévia!'}
-                    </p>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">
-                      No VIP eu mostro tudo sem limites 💋
-                    </p>
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
-          
-          {/* Typing Indicator */}
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="bg-[#18181b]/80 backdrop-blur-md border border-white/10 rounded-2xl rounded-bl-sm p-3.5 shadow-lg flex items-center gap-1.5 h-[42px]">
-                <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            ))}
+            
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-[#18181b]/80 backdrop-blur-md border border-white/10 rounded-2xl rounded-bl-sm p-3.5 shadow-lg flex items-center gap-1.5 h-[42px]">
+                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
               </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
 
         {/* Botão de Prévia Flutuante (Aparece quando o chat atinge o gatilho e há prévias disponíveis) */}
         {showPreviewButton && previewsLeft > 0 && (
@@ -449,22 +493,14 @@ export default function LiveRoom() {
 
             <div className="space-y-3">
               <button 
-                onClick={() => {
-                  alert(`Gerando PIX de R$ 17,99...`)
-                  handlePaymentSuccess()
-                  setShowVipModal(false)
-                }}
+                onClick={() => handleOpenPix(17.99, 'vip_total')}
                 className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white font-black py-3.5 rounded-xl flex items-center justify-center gap-2 transition text-sm shadow-[0_0_20px_rgba(255,0,0,0.3)]"
               >
                 <span className="mr-1">✔️</span> ACESSO COMPLETO (R$ 17,99) 🔥
               </button>
 
               <button 
-                onClick={() => {
-                  alert(`Gerando PIX de R$ 12,99...`)
-                  handlePaymentSuccess()
-                  setShowVipModal(false)
-                }}
+                onClick={() => handleOpenPix(12.99, 'vip_basico')}
                 className="w-full bg-[#18181b] hover:bg-[#27272a] border border-white/10 text-white font-bold py-3.5 rounded-xl flex items-center justify-center transition text-sm"
               >
                 ACESSO BÁSICO (R$ 12,99)
@@ -481,37 +517,24 @@ export default function LiveRoom() {
           <div className="bg-[#121214] border border-zinc-800 w-full max-w-sm rounded-3xl p-6 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 shadow-2xl z-20">
             
             <div className="text-center mb-6">
-              <div className="inline-block bg-[#00d26a] text-white text-[10px] font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider">
-                UPGRADE EXCLUSIVO 💎
+              <div className={`inline-block ${activeOffer.id === 'upsell_reconexao' ? 'bg-[#ff9900] text-black font-extrabold' : 'bg-[#00d26a] text-white font-bold'} text-[10px] px-3 py-1 rounded-full mb-3 uppercase tracking-wider`}>
+                {activeOffer.badge || 'UPGRADE EXCLUSIVO 💎'}
               </div>
               <h3 className="text-2xl font-black text-white uppercase tracking-wider leading-tight">
-                QUER O ACESSO <br/><span className="text-[#00d26a]">TOTAL? 💦</span>
+                {activeOffer.title}
               </h3>
               <p className="text-zinc-400 text-[11px] mt-3 uppercase tracking-wider">
-                LIBERE O <span className="text-[#00d26a] font-bold">VIP COMPLETO</span> E GANHE ACESSO A:
+                {activeOffer.copy}
               </p>
             </div>
             
             <div className="space-y-3 mb-6">
-              <div className="flex gap-3 items-start">
-                <div className="text-yellow-400 text-lg mt-0.5">⭐</div>
-                <div className="text-white text-xs font-bold uppercase leading-relaxed">TIRO A ROUPA TODA E FICO NUA PRA VOCÊ 😍</div>
-              </div>
-              
-              <div className="flex gap-3 items-start">
-                <div className="text-yellow-400 text-lg mt-0.5">⭐</div>
-                <div className="text-white text-xs font-bold uppercase leading-relaxed">ME MASTURBO BEM GOSTOSO COM VOCÊ AO VIVO 💦</div>
-              </div>
-
-              <div className="flex gap-3 items-start">
-                <div className="text-yellow-400 text-lg mt-0.5">⭐</div>
-                <div className="text-white text-xs font-bold uppercase leading-relaxed">PASSO MEU WHATSAPP PESSOAL AGORA 📱</div>
-              </div>
-
-              <div className="flex gap-3 items-start">
-                <div className="text-yellow-400 text-lg mt-0.5">⭐</div>
-                <div className="text-white text-xs font-bold uppercase leading-relaxed">A GENTE MARCA DE SE VER AÍ 📍</div>
-              </div>
+              {activeOffer.benefits.map((benefit, idx) => (
+                <div key={idx} className="flex gap-3 items-start">
+                  <div className="text-yellow-400 text-lg mt-0.5">⭐</div>
+                  <div className="text-white text-xs font-bold uppercase leading-relaxed">{benefit}</div>
+                </div>
+              ))}
             </div>
 
             <div className="flex justify-center mb-4">
@@ -522,32 +545,44 @@ export default function LiveRoom() {
             </div>
 
             <div className="text-center mb-6">
-              <div className="text-[#f43f8e] text-[10px] font-bold uppercase tracking-wider mb-1">OFERTA ÚNICA</div>
-              <div className="text-zinc-500 text-xs line-through mb-1">De R$ 35,98</div>
-              <div className="text-white font-black text-4xl">R$ 17,99</div>
+              <div className="text-[#f43f8e] text-[10px] font-bold uppercase tracking-wider mb-1">OFERTA ESPECIAL</div>
+              <div className="text-white font-black text-4xl">R$ {activeOffer.price}</div>
             </div>
 
             <button 
               onClick={() => {
-                alert(`Gerando PIX de R$ 17,99...`)
-                handlePaymentSuccess()
+                const numericPrice = parseFloat(activeOffer.price.replace(',', '.'))
+                handleOpenPix(numericPrice, activeOffer.id)
               }}
               className="w-full bg-[#ff2a2a] hover:bg-[#e60000] text-white font-black py-3.5 rounded-xl flex items-center justify-center gap-2 transition text-sm shadow-[0_0_20px_rgba(255,42,42,0.3)] mb-3"
             >
-              <span className="mr-1">✓</span> ACESSO COMPLETO (R$ 17,99) 🔥
+              <span className="mr-1">✓</span> LIBERAR AGORA (R$ {activeOffer.price}) 🔥
             </button>
 
             <button 
               onClick={() => {
                 handlePaymentSuccess() // Pula a oferta
               }}
-              className="w-full bg-[#18181b] hover:bg-zinc-800 text-zinc-300 font-bold py-3.5 rounded-xl transition text-sm"
+              className="w-full bg-[#18181b] hover:bg-zinc-800 text-zinc-400 font-bold py-3 rounded-xl transition text-xs"
             >
-              ACESSO BÁSICO (R$ 12,99)
+              Continuar assistindo sem esse upgrade
             </button>
           </div>
         </div>
       )}
+
+      {/* Modal de Checkout PIX idêntico ao print */}
+      <PixModal
+        isOpen={showPixModal}
+        onClose={() => setShowPixModal(false)}
+        modelName="NICOLE OLIVEIRA"
+        loading={pix.loading}
+        error={pix.error}
+        pixData={pix.pixData}
+        copied={pix.copied}
+        onCopy={pix.copyToClipboard}
+        onSimulateSuccess={pix.simulatePayment}
+      />
     </div>
   )
 }

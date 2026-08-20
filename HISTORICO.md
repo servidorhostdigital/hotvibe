@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 19/08/2026 - 21:15
+- Simulação completa do funil de pagamento via Playwright:
+  - Captura de screenshots de cada etapa do funil (Front-end, Upsell 1, Upsell 2, Upsell 3).
+  - Implementação de auto-resume do vídeo após o pagamento de cada oferta.
+  - Validação visual do fluxo de upsell dinâmico.
+
 ## 19/08/2026 - 20:45
 - Implementado o Card de Prévia no Chat:
   - Ao invés de reabrir o modal VIP imediatamente após a prévia, agora um "Card de Prévia" é enviado no chat.
@@ -201,3 +207,101 @@
   - Corrigido o travamento que ocorria se o usuário tentasse digitar algo após o chatStep 5.
   - O `setIsTyping(false)` agora é executado dentro de um `setTimeout` para garantir que a UI seja atualizada corretamente antes do `return`, evitando que os 'três pontinhos' fiquem travados na tela.
 
+## 19/08/2026 - 22:10
+- Push para o GitHub:
+  - O repositório completo com todos os códigos, vídeos, prévias, funil e histórico foi enviado com sucesso para: https://github.com/servidorhostdigital/livestore
+
+## 19/08/2026 - 22:15
+- Teste do Funil de Upsell:
+  - O fluxo foi testado até o final, incluindo a simulação de pagamento do VIP Básico.
+  - O vídeo foi avançado para o minuto 5 (300s) para acionar o primeiro Upsell ('Show Exclusivo').
+  - O modal de Upsell apareceu corretamente na tela, bloqueando o chat e oferecendo o upgrade.
+
+## 19/08/2026 - 22:15
+- Teste do Funil de Upsell:
+  - O fluxo foi testado até o final, incluindo a simulação de pagamento do VIP Básico.
+  - O vídeo foi avançado para o minuto 5 (300s) para acionar o primeiro Upsell ('Show Exclusivo').
+  - O modal de Upsell apareceu corretamente na tela, bloqueando o chat e oferecendo o upgrade.
+
+## 19/08/2026 - 22:25
+- Ajuste e Validação do Funil de Upsell:
+  - Corrigido o modal dinâmico de Upsell em LiveRoom.tsx para exibir título, cópia, benefícios e preço de cada uma das ofertas (Show Exclusivo R$ 19,90, Controle o Brinquedo R$ 29,90, WhatsApp Pessoal R$ 49,90).
+  - Fluxo de liberação automática validado: ao pagar/desbloquear o upsell, o vídeo volta a rodar liberando o conteúdo.
+
+
+## 19/08/2026 - 21:15
+- Simulação completa do funil de pagamento via Playwright:
+  - Captura de screenshots de cada etapa do funil (Front-end, Upsell 1, Upsell 2, Upsell 3).
+  - Implementação de auto-resume do vídeo após o pagamento de cada oferta.
+  - Validação visual do fluxo de upsell dinâmico.
+
+## 19/08/2026 - 21:30
+- Modo de simulação contínua do funil ativado no clique:
+  - Ao clicar em 'LIBERAR VIP' / 'ACESSO COMPLETO', a compra é confirmada diretamente sem alert bloqueante.
+  - Cada etapa de Upsell (Show Exclusivo, Brinquedo, WhatsApp) avança em sequência automática para demonstração prática.
+
+## 19/08/2026 - 21:40
+- Ajustado disparo dos Upsells:
+  - Removido o adiantamento artificial de tempo e avanço automático forçado.
+  - Cada Upsell agora é disparado estritamente quando o vídeo atinge o seu respectivo `triggerTime` no decorrer normal da reprodução.
+
+## 19/08/2026 - 21:45
+- Limpeza das prévias ao liberar acesso VIP:
+  - O botão de prévia flutuante é ocultado imediatamente.
+  - Todos os cards e vídeos de prévia anteriores são removidos do histórico do chat assim que o acesso VIP é liberado.
+
+## 19/08/2026 - 21:50
+- Reestruturação da linha do tempo e Upsells:
+  - Removido o Upsell de 5 minutos ('Show Exclusivo').
+  - Ao liberar o acesso VIP, o vídeo agora pula diretamente para 5:00 (300 segundos), onde a modelo inicia a promessa de entrega do conteúdo.
+  - Upsell 1 ('Controle o Brinquedo' - R$ 29,90) configurado para disparar aos 10:00 (600 segundos).
+  - Upsell 2 ('WhatsApp Pessoal' - R$ 49,90) configurado para disparar aos 15:00 (900 segundos).
+
+## 19/08/2026 - 21:55
+- Atualização do Upsell 2 (WhatsApp):
+  - Tempo de disparo alterado de 15 minutos (900s) para 16 minutos (960s).
+  - Copy e benefícios atualizados para focar em 'chamada de vídeo grátis' e 'fotos exclusivas diariamente'.
+
+## 19/08/2026 - 22:00
+- Correção de travamento no disparo de Upsells:
+  - Ajustada a lógica do `handleTimeUpdate` para evitar loops de pausa quando o vídeo atinge o tempo exato do gatilho e a oferta já está ativa.
+
+## 19/08/2026 - 22:05
+- Adicionado Upsell de Conexão Perdida:
+  - Disparado aos 7:30 de vídeo (450 segundos).
+  - Valor: R$ 9,90 com badge 'ESTABILIDADE DO SERVIDOR 📶'.
+  - Benefícios: Reconexão instantânea, servidor prioritário anti-queda e qualidade 1080p sem travamentos.
+
+## 19/08/2026 - 22:10
+- Ocultação do histórico de conversa:
+  - O container de mensagens do chat flutuante agora é ocultado completamente assim que o acesso VIP é liberado (`isVip === true`), mantendo a tela limpa e focada no vídeo da live.
+
+## 19/08/2026 - 22:15
+- Sistema Global de Repasse e Preservação de UTMs:
+  - Criado o utilitário `src/utils/utm.ts` (`captureAndPersistUtms` e `buildUrlWithUtms`).
+  - Suporte completo a `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `src`, `sck`, `fbclid`, `gclid`, `ttclid`, `kwai_pixel_id` e parâmetros de rastreamento customizados.
+  - Os parâmetros da URL são automaticamente capturados no carregamento inicial da aplicação e salvos no `sessionStorage` e `localStorage` para persistir em todas as etapas do funil de checkout/upsell.
+
+## 19/08/2026 - 22:25
+- Implementação da API de PIX e Modal de Checkout idêntico ao design original:
+  - Criado o hook `usePixCheckout` (`src/hooks/usePixCheckout.ts`) conectando às rotas `/hotlive/api/pix/:slug` e `/hotlive/api/pix/status/:slug/:transactionId` com polling automático de confirmação.
+  - Criado o componente `PixModal` (`src/components/PixModal.tsx`) com badge 'PAGAMENTO PENDENTE', título dinâmico com o nome da modelo, passos 1 e 2 de instrução, botão gradiente 'CLIQUE PARA COPIAR O PIX' e status pulsante 'Aguardando pagamento...'.
+  - Integrado ao modal VIP e a todos os Upsells do funil.
+
+## 19/08/2026 - 22:30
+- Atualização da API de PIX para a MonsterPay oficial:
+  - Endpoint de criação: POST https://wahkbxkiwdjtlnvvxxrh.supabase.co/functions/v1/monsterpay-api/v1/create-payment
+  - Endpoint de consulta: GET https://wahkbxkiwdjtlnvvxxrh.supabase.co/functions/v1/monsterpay-api/v1/payment-status/:id
+  - Headers `x-api-key` e `x-secret-key` configuráveis via `VITE_MONSTERPAY_API_KEY` e `VITE_MONSTERPAY_SECRET_KEY` no .env
+  - Repasse automático de parâmetros de UTM (utm_source, utm_campaign, utm_medium, utm_content, utm_term, src, sck) no payload de cobrança.
+
+## 19/08/2026 - 22:35
+- Criação do arquivo central de configuração `src/config.ts`:
+  - Permite configurar de forma rápida as chaves da MonsterPay (`apiKey` e `secretKey`).
+  - Permite definir dados padrão do cliente e valores de cada oferta do funil.
+  - Hook `usePixCheckout` agora consome diretamente as credenciais e URLs de `src/config.ts`.
+
+## 19/08/2026 - 22:40
+- Ativada a chamada real para a API MonsterPay em todos os ambientes (removido fallback de mock em localhost):
+  - Agora o PIX gerado é sempre o código real da MonsterPay emitido via chaves da API.
+  - O polling de status ativo para conferir pagamentos reais em tempo real.
