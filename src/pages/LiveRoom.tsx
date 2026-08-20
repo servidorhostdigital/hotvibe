@@ -203,7 +203,7 @@ export default function LiveRoom() {
       
       // Na sexta mensagem, exibe o botão de prévia se houver
       // O tempo de exibição do botão será baseado no tempo de digitação da mensagem acima
-      const typingDelay = Math.max(1500, responseText.length * 40)
+      const typingDelay = Math.min(8000, Math.max(2500, responseText.length * 75))
       
       setTimeout(() => {
         if (!unlockedOffers.includes('front')) {
@@ -223,8 +223,9 @@ export default function LiveRoom() {
       return
     }
 
-    // Calcula o delay dinâmico baseado no tamanho do texto (aprox. 40ms por caractere, mínimo de 1.5s)
-    const dynamicDelay = Math.max(1500, responseText.length * 40)
+    // Calcula o delay dinâmico baseado no tamanho do texto (aprox. 75ms por caractere)
+    // Simula o tempo real de digitação no celular
+    const dynamicDelay = Math.min(8000, Math.max(2500, responseText.length * 75))
 
     // Envia a resposta da modelo
     setTimeout(() => {
@@ -302,7 +303,7 @@ export default function LiveRoom() {
       <div className="absolute inset-0 z-0">
         <video 
           ref={videoRef}
-          src="/video.mp4" 
+          src="https://res.cloudinary.com/hlsmqrui/video/upload/v1787232374/video.mp4" 
           autoPlay 
           loop 
           muted 

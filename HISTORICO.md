@@ -1,5 +1,38 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 10:50
+- Atualizado o título da página para "Hotlive Ao vivo" em [index.html](live-funnel/index.html).
+- Criado e adicionado um favicon de fogo (🔥) em SVG para combinar com o estilo "hot".
+
+## 20/08/2026 - 10:48
+- Aumentado o tempo de digitação da modelo em [LiveRoom.tsx](live-funnel/src/pages/LiveRoom.tsx) para 75ms por caractere (mínimo 2.5s, máximo 8s), tornando a simulação de digitação mais realista e proporcional ao tamanho da mensagem.
+
+## 20/08/2026 - 10:45
+- Ajuste de sincronização de digitação do chat com os movimentos da modelo:
+  - Otimizado o delay dinâmico de digitação em [LiveRoom.tsx](live-funnel/src/pages/LiveRoom.tsx) (entre 2.2s e 4.5s com base no comprimento da mensagem) para corresponder ao tempo real em que a modelo digita no celular durante o vídeo.
+
+## 20/08/2026 - 10:40
+- Removido áudio ambiente de fundo em [LiveRoom.tsx](live-funnel/src/pages/LiveRoom.tsx).
+
+## 20/08/2026 - 10:28
+- Removido gatilho de áudio de notificação do chat.
+
+## 20/08/2026 - 10:20
+- Atualização do vídeo principal para CDN Cloudinary:
+  - Substituído caminho local `/video.mp4` por `https://res.cloudinary.com/hlsmqrui/video/upload/v1787232374/video.mp4` em [LiveRoom.tsx](live-funnel/src/pages/LiveRoom.tsx), garantindo streaming rápido e sem travamentos na Vercel.
+
+## 20/08/2026 - 10:10
+- Integração completa com a API FurionPay (https://api.furionpay.com/integration):
+  - Configuração do endpoint de criação de PIX (`POST /api-v1-pix-create`) com autenticação via `Authorization: Bearer <API_KEY>`.
+  - Configuração do endpoint de status (`GET /api-v1-pix-status?txid=<TXID>`) com polling automático para confirmação em tempo real.
+  - Repasse completo dos parâmetros de rastreamento (UTMs) no objeto `utm`.
+  - Centralização da configuração e chave de API em [config.ts](live-funnel/src/config.ts).
+
+## 20/08/2026 - 10:00
+- Remoção da API e credenciais da MonsterPay:
+  - Limpos os campos de credenciais e endpoint no arquivo [config.ts](live-funnel/src/config.ts).
+  - Estrutura de checkout e hook [usePixCheckout.ts](live-funnel/src/hooks/usePixCheckout.ts) preparada para receber a nova API de pagamento.
+
 ## 19/08/2026 - 21:15
 - Simulação completa do funil de pagamento via Playwright:
   - Captura de screenshots de cada etapa do funil (Front-end, Upsell 1, Upsell 2, Upsell 3).

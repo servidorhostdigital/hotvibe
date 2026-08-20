@@ -3,18 +3,18 @@
 // =========================================================================
 
 export const CONFIG = {
-  // 1. CREDENCIAIS DA MONSTERPAY
-  // Obtenha suas credenciais em: https://api.monsterpay.top/integracoes
-  monsterpay: {
-    apiKey: 'mp_live_aaceed2da27e47aaa2948b7cf3017e1d',
-    secretKey: 'mp_secret_1fc7d725894848b899617418554ceeee4c36aee55ba545f1',
-    apiUrl: 'https://wahkbxkiwdjtlnvvxxrh.supabase.co/functions/v1/monsterpay-api/v1'
+  // 1. CREDENCIAIS DA FURIONPAY (https://api.furionpay.com/integration)
+  furionpay: {
+    apiUrl: 'https://pmxpimpctlqhpgjibnrs.supabase.co/functions/v1',
+    apiKey: 'fp_live_ustZF0qYEjDcDdmNxZIrGIrcFwjU5KNL' // Cole sua API Key (ex: fp_live_...) aqui
   },
 
   // 2. CONFIGURAÇÃO DE DADOS PADRÃO DO CLIENTE
   customerDefaults: {
     name: 'Cliente Live',
-    email: 'cliente@live.com'
+    email: 'cliente@live.com',
+    phone: '11988887777',
+    document: '12345678900'
   },
 
   // 3. OFERTAS E VALORES DO FUNIL (em R$)

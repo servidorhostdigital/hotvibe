@@ -28,33 +28,42 @@ export function usePixCheckout({ tracking, onSuccess }: UsePixCheckoutProps) {
     setCopied(false)
 
     try {
-      // Chamada real para a API MonsterPay
-      const response = await fetch(`${CONFIG.monsterpay.apiUrl}/create-payment`, {
+      // Endpoint oficial da FurionPay
+      if (!CONFIG.furionpay.apiKey || CONFIG.furionpay.apiKey === 'SUA_API_KEY_AQUI') {
+        throw new Error('Configure sua API Key da FurionPay em src/config.ts')
+      }
+
+      const response = await fetch(`${CONFIG.furionpay.apiUrl}/api-v1-pix-create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': CONFIG.monsterpay.apiKey,
-          'x-secret-key': CONFIG.monsterpay.secretKey
+          'Authorization': `Bearer ${CONFIG.furionpay.apiKey}`
         },
         body: JSON.stringify({
           amount: valor,
-          customer_name: CONFIG.customerDefaults.name,
-          customer_email: CONFIG.customerDefaults.email,
           description: plano,
-          ...tracking
+          external_reference: `live-${Date.now()}`,
+          customer: {
+            name: CONFIG.customerDefaults.name,
+            email: CONFIG.customerDefaults.email,
+            phone: CONFIG.customerDefaults.phone,
+            document: CONFIG.customerDefaults.document
+          },
+          utm: tracking
         })
       })
 
       const data = await response.json()
 
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Erro ao gerar PIX.')
+      if (!response.ok || !data.success || !data.data) {
+        const errorMsg = data?.error?.message || data?.error || 'Erro ao gerar PIX com a FurionPay.'
+        throw new Error(errorMsg)
       }
 
       setPixData({
-        qrcode: data.pix_qr_code || null,
-        copiaCola: data.pix_code,
-        transactionId: data.id
+        qrcode: data.data.qr_code_url || null,
+        copiaCola: data.data.pix_code,
+        transactionId: data.data.txid
       })
     } catch (err: any) {
       setError(err.message || 'Não foi possível conectar. Tente novamente.')
@@ -63,7 +72,7 @@ export function usePixCheckout({ tracking, onSuccess }: UsePixCheckoutProps) {
     }
   }
 
-  // Polling para verificar o status do pagamento
+  // Polling para verificar o status do pagamento na FurionPay
   useEffect(() => {
     if (!pixData || !pixData.transactionId) return
 
@@ -71,15 +80,16 @@ export function usePixCheckout({ tracking, onSuccess }: UsePixCheckoutProps) {
 
     const checkStatus = async () => {
       try {
-        const response = await fetch(`${CONFIG.monsterpay.apiUrl}/payment-status/${pixData.transactionId}`, {
+        if (!CONFIG.furionpay.apiKey || CONFIG.furionpay.apiKey === 'SUA_API_KEY_AQUI') return
+
+        const response = await fetch(`${CONFIG.furionpay.apiUrl}/api-v1-pix-status?txid=${pixData.transactionId}`, {
           headers: {
-            'x-api-key': CONFIG.monsterpay.apiKey,
-            'x-secret-key': CONFIG.monsterpay.secretKey
+            'Authorization': `Bearer ${CONFIG.furionpay.apiKey}`
           }
         })
         const data = await response.json()
 
-        if (data.status === 'paid') {
+        if (data?.data?.status === 'paid' || data?.status === 'paid') {
           clearInterval(interval)
           onSuccess()
         }
