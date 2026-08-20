@@ -210,23 +210,27 @@ export default function LiveRoom() {
 
     // Função auxiliar para extrair o nome do usuário
     const extractName = (msg: string) => {
-      const lowerMsg = msg.toLowerCase()
+      const lowerMsg = msg.toLowerCase().trim()
       let extracted = ''
-      const words = msg.split(' ')
+      const words = lowerMsg.split(' ')
       
-      // Ignora palavras comuns de saudação
-      const ignoreWords = ['oi', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom', 'dia', 'tarde', 'noite']
+      // Ignora palavras comuns de saudação, perguntas e respostas curtas
+      const ignoreWords = [
+        'oi', 'oie', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom', 'dia', 'tarde', 'noite',
+        'como', 'voce', 'você', 'vc', 'chama', 'seu', 'nome', 'quem', 'e', 'é',
+        'sim', 'estou', 'to', 'tô', 'aqui', 'nao', 'não'
+      ]
       
-      if (words.length <= 2) {
-        // Pega a primeira palavra que não seja uma saudação
-        const validWord = words.find(w => !ignoreWords.includes(w.toLowerCase()))
-        if (validWord) extracted = validWord
-      } else if (lowerMsg.includes('sou o') || lowerMsg.includes('sou a')) {
+      if (lowerMsg.includes('sou o') || lowerMsg.includes('sou a')) {
         const match = lowerMsg.match(/sou [oa] (\w+)/)
         if (match) extracted = match[1]
       } else if (lowerMsg.includes('nome é') || lowerMsg.includes('chamo')) {
         const match = lowerMsg.match(/(?:nome é|chamo) (\w+)/)
         if (match) extracted = match[1]
+      } else if (words.length <= 2) {
+        // Pega a primeira palavra que não seja uma palavra ignorada
+        const validWord = words.find(w => !ignoreWords.includes(w))
+        if (validWord) extracted = validWord
       }
       return extracted ? extracted.charAt(0).toUpperCase() + extracted.slice(1) : null
     }
@@ -249,7 +253,7 @@ export default function LiveRoom() {
                             userMessageLower.includes('quem é vc')
 
     // Lógica de interpretação de intenção (Skill de Agente)
-    const isGreeting = ['oi', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom dia', 'boa tarde', 'boa noite'].some(g => userMessageLower === g || userMessageLower.startsWith(g + ' '))
+    const isGreeting = ['oi', 'oie', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom dia', 'boa tarde', 'boa noite'].some(g => userMessageLower === g || userMessageLower.startsWith(g + ' '))
     const isPositive = ['sim', 'quero', 'estou', 'bora', 'vamos', 'claro', 'com certeza', 'manda', 'mostra'].some(p => userMessageLower.includes(p))
     const isNegative = ['não', 'nao', 'nunca', 'jamais', 'nem', 'sai'].some(n => userMessageLower.includes(n))
 
@@ -274,11 +278,17 @@ export default function LiveRoom() {
       }
     } else if (chatStep === 1) {
       // Passo 1: Pegando o nome e perguntando a cidade
-      const currentName = userName || extractName(userMessage) || 'amor'
-      if (!userName && currentName !== 'amor') setUserName(currentName)
+      // Se o usuário perguntar o nome dela de volta ("como voce chama", "e o seu", etc)
+      if (isAskingHerName || userMessageLower.includes('e o seu') || userMessageLower.includes('e vc') || userMessageLower.includes('e você')) {
+        responseText = `Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser 😈🔥 E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa...`
+        setChatStep(2)
+      } else {
+        const currentName = userName || extractName(userMessage) || 'amor'
+        if (!userName && currentName !== 'amor') setUserName(currentName)
 
-      responseText = `Nossa, ${currentName}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
-      setChatStep(2)
+        responseText = `Nossa, ${currentName}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
+        setChatStep(2)
+      }
     } else if (chatStep === 2) {
       // Passo 2: Reagindo à cidade e perguntando se está sozinho
       responseText = 'Hummm, adoro os homens daí... Você tá sozinho aí agora pra gente conversar no sigilo? 🥵'
