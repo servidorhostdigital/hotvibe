@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 11:45
+- Adicionada opção de personalização de cor da fonte em `Criativo/gerador-story.html`:
+  - Novo input do tipo `color` para alterar a cor principal do Nome e Subtítulo.
+  - Atualização em tempo real no canvas ao selecionar a cor.
+
 ## 20/08/2026 - 11:40
 - Ajustado o layout em `Criativo/gerador-story.html`:
   - Aumentada a largura máxima do container principal (`max-w-5xl` para `max-w-6xl`).
