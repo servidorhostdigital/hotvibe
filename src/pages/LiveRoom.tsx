@@ -248,68 +248,75 @@ export default function LiveRoom() {
                             userMessageLower.includes('quem e vc') ||
                             userMessageLower.includes('quem é vc')
 
+    // Lógica de interpretação de intenção (Skill de Agente)
+    const isGreeting = ['oi', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom dia', 'boa tarde', 'boa noite'].some(g => userMessageLower === g || userMessageLower.startsWith(g + ' '))
+    const isPositive = ['sim', 'quero', 'estou', 'bora', 'vamos', 'claro', 'com certeza', 'manda', 'mostra'].some(p => userMessageLower.includes(p))
+    const isNegative = ['não', 'nao', 'nunca', 'jamais', 'nem', 'sai'].some(n => userMessageLower.includes(n))
+
     if (isAskingHerName) {
       if (userName) {
         responseText = `Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, ${userName} 😈🔥`
       } else {
         responseText = 'Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, amor 😈🔥 E você, como se chama?'
-        // Força o chatStep para 1 para que a próxima resposta seja a de cidade
-        setChatStep(1)
+        setChatStep(1) // Pula a saudação inicial e vai direto para perguntar a cidade depois
       }
     } else if (chatStep === 0) {
-      setChatStep(1)
-      
-      responseText = 'Que bom que você me respondeu... Eu tava me sentindo tão sozinha aqui. Como você se chama? 💋'
-      
+      // Passo 0: Saudação inicial
+      if (isGreeting && !userName) {
+        responseText = 'Que bom que você me respondeu... Eu tava me sentindo tão sozinha aqui. Como você se chama? 💋'
+        setChatStep(1)
+      } else if (userName) {
+        responseText = `Nossa, ${userName}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
+        setChatStep(2)
+      } else {
+        responseText = 'Que bom que você me respondeu... Eu tava me sentindo tão sozinha aqui. Como você se chama? 💋'
+        setChatStep(1)
+      }
     } else if (chatStep === 1) {
-      setChatStep(2)
-      
+      // Passo 1: Pegando o nome e perguntando a cidade
       const currentName = userName || extractName(userMessage) || 'amor'
       if (!userName && currentName !== 'amor') setUserName(currentName)
 
       responseText = `Nossa, ${currentName}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
-      
+      setChatStep(2)
     } else if (chatStep === 2) {
-      setChatStep(3)
-      
+      // Passo 2: Reagindo à cidade e perguntando se está sozinho
       responseText = 'Hummm, adoro os homens daí... Você tá sozinho aí agora pra gente conversar no sigilo? 🥵'
-      
+      setChatStep(3)
     } else if (chatStep === 3) {
-      setChatStep(4)
-      
-      if (userMessageLower.includes('sim') || userMessageLower.includes('estou') || userMessageLower.includes('sozinho')) {
+      // Passo 3: Reagindo se está sozinho
+      if (isPositive || userMessageLower.includes('sozinho')) {
         responseText = 'Que delícia... Eu tô aqui toda molhadinha pensando em você. Quer ver onde minha mão tá descendo? 💦'
-      } else if (userMessageLower.includes('não') || userMessageLower.includes('nao') || userMessageLower.includes('gente')) {
-        responseText = 'No sigilo fica ainda mais gostoso... Eu tô aqui bem excitada. Quer ver onde minha mão tá tocando? 💦'
+      } else if (isNegative || userMessageLower.includes('gente') || userMessageLower.includes('acompanhado')) {
+        responseText = 'No sigilo fica ainda mais gostoso... vai pro banheiro ou pro quarto. Eu tô aqui bem excitada. Quer ver onde minha mão tá tocando? 💦'
       } else {
         responseText = 'Eu tô aqui toda molhadinha pensando em você. Quer ver onde minha mão tá descendo? 💦'
       }
+      setChatStep(4)
     } else if (chatStep === 4) {
-      setChatStep(5)
-      
-      if (userMessageLower.includes('quero') || userMessageLower.includes('sim') || userMessageLower.includes('mostra') || userMessageLower.includes('veja')) {
+      // Passo 4: Reagindo se quer ver
+      if (isPositive || userMessageLower.includes('veja')) {
         responseText = 'Vou tirar minha calcinha bem devagar e abrir a câmera só pra você... Quer me ver todinha ao vivo? 🤤'
+      } else if (isNegative) {
+        responseText = 'Ah, para de ser tímido... Vou tirar minha calcinha bem devagar e abrir a câmera só pra você... Quer me ver todinha ao vivo? 🤤'
       } else {
         responseText = 'Vou tirar minha calcinha bem devagar e abrir a câmera só pra você... Quer me ver todinha ao vivo? 🤤'
       }
+      setChatStep(5)
     } else if (chatStep === 5) {
-      // Adiciona uma mensagem final antes de liberar o botão de prévia
+      // Passo 5: Chamada para a prévia
       responseText = 'Clica no botão aqui embaixo pra ver uma provinha do que eu vou fazer com você... 🔥'
       
-      // Na sexta mensagem, exibe o botão de prévia se houver
-      // O tempo de exibição do botão será baseado no tempo de digitação da mensagem acima
       const typingDelay = Math.min(8000, Math.max(2500, responseText.length * 75))
       
       setTimeout(() => {
         if (!unlockedOffers.includes('front')) {
-          // Se ainda tem prévias, mostra o botão de prévia sem pausar o vídeo principal
           if (previewsLeft > 0) {
             setShowPreviewButton(true)
           }
         }
       }, typingDelay + 500)
     } else {
-      // Se já passou do passo 5 e o usuário tentar digitar, apenas ignora ou pede pra clicar no botão
       setTimeout(() => {
         setIsTyping(false)
       }, 500)
