@@ -1,5 +1,11 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 18:40
+- Aprimorada a inteligência contextual do agente no chat:
+  - Adicionada detecção semântica para intenções: saudações (`isGreeting`), respostas afirmativas/de interesse (`isPositive`) e respostas negativas/hesitantes (`isNegative`).
+  - Corrigido o fluxo para quando o usuário responde a mensagem de inatividade ("estou sim", "tô aqui", etc.), evitando que o sistema confunda a resposta com um nome próprio.
+  - As respostas agora se adaptam organicamente ao que o usuário diz em cada etapa do funil.
+
 ## 20/08/2026 - 18:35
 - Otimizado o tamanho dos cards de prévia no chat:
   - Reduzido o tamanho do vídeo da prévia (`max-w-[170px] sm:max-w-[200px]` e `aspect-[4/3]`) com visual mais compacto.
