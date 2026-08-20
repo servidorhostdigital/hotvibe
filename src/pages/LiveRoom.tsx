@@ -90,31 +90,51 @@ export default function LiveRoom() {
 
   // Timer de Inatividade (40 segundos)
   useEffect(() => {
-    // Limpa o timer existente
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current)
+    const startInactivityTimer = () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current)
+      }
+
+      // Só inicia o timer se o usuário já interagiu, não é VIP, e não há oferta ativa
+      if (hasInteracted && !isVip && !activeOffer && !showVipModal && !showPixModal) {
+        inactivityTimerRef.current = setTimeout(() => {
+          setIsTyping(true)
+          setTimeout(() => {
+            setMessages(prev => [...prev, { 
+              id: 'inactivity-' + Date.now(), 
+              name: 'NICOLE OLIVEIRA 🔥', 
+              text: 'Você tá aí amor? Tô te esperando... 🥺', 
+              isModel: true 
+            }])
+            setIsTyping(false)
+          }, 2500)
+        }, 40000) // 40 segundos
+      }
     }
 
-    // Só inicia o timer se o usuário já interagiu, não é VIP, e não há oferta ativa
-    if (hasInteracted && !isVip && !activeOffer && !showVipModal && !showPixModal) {
-      inactivityTimerRef.current = setTimeout(() => {
-        setIsTyping(true)
-        setTimeout(() => {
-          setMessages(prev => [...prev, { 
-            id: 'inactivity-' + Date.now(), 
-            name: 'NICOLE OLIVEIRA 🔥', 
-            text: 'Você tá aí amor? Tô te esperando... 🥺', 
-            isModel: true 
-          }])
-          setIsTyping(false)
-        }, 2500)
-      }, 40000) // 40 segundos
+    // Inicia o timer normalmente
+    startInactivityTimer()
+
+    // Listener para quando o usuário sai e volta para a aba
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // Quando volta para a aba, reseta o timer
+        startInactivityTimer()
+      } else {
+        // Quando sai da aba, pausa o timer para não enviar mensagem enquanto ele não está vendo
+        if (inactivityTimerRef.current) {
+          clearTimeout(inactivityTimerRef.current)
+        }
+      }
     }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current)
       }
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [messages, isVip, activeOffer, showVipModal, showPixModal, hasInteracted])
 

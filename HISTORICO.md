@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 12:10
+- Corrigido travamento de estado de inatividade no chat em `live-funnel/src/pages/LiveRoom.tsx`:
+  - Adicionado listener de `visibilitychange` para pausar timers quando o usuário sai da aba e reiniciar suavemente quando ele retorna, garantindo que o chat continue 100% responsivo e editável sem necessidade de recarregar a página.
+
 ## 20/08/2026 - 12:05
 - Adicionada lógica de inatividade no chat em `live-funnel/src/pages/LiveRoom.tsx`:
   - Se o usuário ficar mais de 40 segundos sem enviar mensagem (após a primeira interação), a modelo envia automaticamente: "Você tá aí amor? Tô te esperando... 🥺".
