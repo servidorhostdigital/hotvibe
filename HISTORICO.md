@@ -1,5 +1,17 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 19:10
+- Criado o motor de inteligência e semântica de chat `chatBrain.ts` (sem dependência de IA externa):
+  - Criado arquivo [live-funnel/src/utils/chatBrain.ts](live-funnel/src/utils/chatBrain.ts) com suporte a:
+    - Extração e memorização de nome e cidade.
+    - Reconhecimento semântico de saudações, afirmações, negações e elogios.
+    - Respostas para céticos ("é fake?", "é robô?", "é gravado?").
+    - Respostas para pedidos de fotos/vídeos/nudes com liberação imediata do botão de prévia.
+    - Respostas com preço e acionamento automático do modal VIP quando perguntam sobre valores/PIX.
+    - Respostas para perguntas sobre idade e localização da modelo.
+    - Delays realistas de digitação proporcional ao tamanho da mensagem.
+  - Integrado o motor ao [live-funnel/src/pages/LiveRoom.tsx](live-funnel/src/pages/LiveRoom.tsx).
+
 ## 20/08/2026 - 18:50
 - Melhorada a experiência de usuário (UX) durante o carregamento do PIX:
   - Como a API da FurionPay leva cerca de 15 segundos para processar e retornar o QR Code, foi adicionado um feedback visual avançado no modal.

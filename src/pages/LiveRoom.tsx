@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Send, Eye, Download } from 'lucide-react'
 import { usePixCheckout } from '../hooks/usePixCheckout'
 import { PixModal } from '../components/PixModal'
+import { processUserChat } from '../utils/chatBrain'
 
 // Configuração das Ofertas
 const OFFERS = [
@@ -195,7 +196,6 @@ export default function LiveRoom() {
     if (!inputValue.trim()) return
 
     const userMessage = inputValue.trim()
-    const userMessageLower = userMessage.toLowerCase()
 
     // Marca que o usuário interagiu
     setHasInteracted(true)
@@ -205,137 +205,40 @@ export default function LiveRoom() {
     setInputValue('')
     setIsTyping(true)
 
-    // Lógica de respostas dinâmicas baseadas no contexto da mensagem do usuário
-    let responseText = ''
+    // Processa com o motor semântico inteligente
+    const decision = processUserChat(userMessage, {
+      userName,
+      chatStep,
+      isVip,
+      previewsLeft
+    })
 
-    // Função auxiliar para extrair o nome do usuário
-    const extractName = (msg: string) => {
-      const lowerMsg = msg.toLowerCase().trim()
-      let extracted = ''
-      const words = lowerMsg.split(' ')
-      
-      // Ignora palavras comuns de saudação, perguntas e respostas curtas
-      const ignoreWords = [
-        'oi', 'oie', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom', 'dia', 'tarde', 'noite',
-        'como', 'voce', 'você', 'vc', 'chama', 'seu', 'nome', 'quem', 'e', 'é',
-        'sim', 'estou', 'to', 'tô', 'aqui', 'nao', 'não'
-      ]
-      
-      if (lowerMsg.includes('sou o') || lowerMsg.includes('sou a')) {
-        const match = lowerMsg.match(/sou [oa] (\w+)/)
-        if (match) extracted = match[1]
-      } else if (lowerMsg.includes('nome é') || lowerMsg.includes('chamo')) {
-        const match = lowerMsg.match(/(?:nome é|chamo) (\w+)/)
-        if (match) extracted = match[1]
-      } else if (words.length <= 2) {
-        // Pega a primeira palavra que não seja uma palavra ignorada
-        const validWord = words.find(w => !ignoreWords.includes(w))
-        if (validWord) extracted = validWord
-      }
-      return extracted ? extracted.charAt(0).toUpperCase() + extracted.slice(1) : null
+    // Atualiza nome se detectado
+    if (decision.extractedName && !userName) {
+      setUserName(decision.extractedName)
     }
 
-    // Tenta extrair o nome em qualquer mensagem se ainda não tivermos
-    if (!userName) {
-      const extracted = extractName(userMessage)
-      if (extracted) setUserName(extracted)
-    }
+    // Atualiza próximo passo do funil
+    setChatStep(decision.nextStep)
 
-    // Se o usuário perguntar o nome dela em qualquer momento
-    const isAskingHerName = userMessageLower.includes('seu nome') || 
-                            userMessageLower.includes('qual seu nome') || 
-                            userMessageLower.includes('como vc se chama') || 
-                            userMessageLower.includes('como você se chama') ||
-                            userMessageLower.includes('como você chama') ||
-                            userMessageLower.includes('como vc chama') ||
-                            userMessageLower.includes('quem é você') ||
-                            userMessageLower.includes('quem e vc') ||
-                            userMessageLower.includes('quem é vc')
-
-    // Lógica de interpretação de intenção (Skill de Agente)
-    const isGreeting = ['oi', 'oie', 'ola', 'olá', 'eai', 'eae', 'opa', 'bom dia', 'boa tarde', 'boa noite'].some(g => userMessageLower === g || userMessageLower.startsWith(g + ' '))
-    const isPositive = ['sim', 'quero', 'estou', 'bora', 'vamos', 'claro', 'com certeza', 'manda', 'mostra'].some(p => userMessageLower.includes(p))
-    const isNegative = ['não', 'nao', 'nunca', 'jamais', 'nem', 'sai'].some(n => userMessageLower.includes(n))
-
-    if (isAskingHerName) {
-      if (userName) {
-        responseText = `Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, ${userName} 😈🔥`
-      } else {
-        responseText = 'Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser, amor 😈🔥 E você, como se chama?'
-        setChatStep(1) // Pula a saudação inicial e vai direto para perguntar a cidade depois
-      }
-    } else if (chatStep === 0) {
-      // Passo 0: Saudação inicial
-      if (isGreeting && !userName) {
-        responseText = 'Que bom que você me respondeu... Eu tava me sentindo tão sozinha aqui. Como você se chama? 💋'
-        setChatStep(1)
-      } else if (userName) {
-        responseText = `Nossa, ${userName}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
-        setChatStep(2)
-      } else {
-        responseText = 'Que bom que você me respondeu... Eu tava me sentindo tão sozinha aqui. Como você se chama? 💋'
-        setChatStep(1)
-      }
-    } else if (chatStep === 1) {
-      // Passo 1: Pegando o nome e perguntando a cidade
-      // Se o usuário perguntar o nome dela de volta ("como voce chama", "e o seu", etc)
-      if (isAskingHerName || userMessageLower.includes('e o seu') || userMessageLower.includes('e vc') || userMessageLower.includes('e você')) {
-        responseText = `Meu nome é Nicole... mas na cama os homens me chamam de safada e você pode me chamar como quiser 😈🔥 E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa...`
-        setChatStep(2)
-      } else {
-        const currentName = userName || extractName(userMessage) || 'amor'
-        if (!userName && currentName !== 'amor') setUserName(currentName)
-
-        responseText = `Nossa, ${currentName}... adorei seu nome. E de qual cidade você é? Quero saber de onde é esse homem que tá me deixando curiosa... 😈`
-        setChatStep(2)
-      }
-    } else if (chatStep === 2) {
-      // Passo 2: Reagindo à cidade e perguntando se está sozinho
-      responseText = 'Hummm, adoro os homens daí... Você tá sozinho aí agora pra gente conversar no sigilo? 🥵'
-      setChatStep(3)
-    } else if (chatStep === 3) {
-      // Passo 3: Reagindo se está sozinho
-      if (isPositive || userMessageLower.includes('sozinho')) {
-        responseText = 'Que delícia... Eu tô aqui toda molhadinha pensando em você. Quer ver onde minha mão tá descendo? 💦'
-      } else if (isNegative || userMessageLower.includes('gente') || userMessageLower.includes('acompanhado')) {
-        responseText = 'No sigilo fica ainda mais gostoso... vai pro banheiro ou pro quarto. Eu tô aqui bem excitada. Quer ver onde minha mão tá tocando? 💦'
-      } else {
-        responseText = 'Eu tô aqui toda molhadinha pensando em você. Quer ver onde minha mão tá descendo? 💦'
-      }
-      setChatStep(4)
-    } else if (chatStep === 4) {
-      // Passo 4: Reagindo se quer ver
-      if (isPositive || userMessageLower.includes('veja')) {
-        responseText = 'Vou tirar minha calcinha bem devagar e abrir a câmera só pra você... Quer me ver todinha ao vivo? 🤤'
-      } else if (isNegative) {
-        responseText = 'Ah, para de ser tímido... Vou tirar minha calcinha bem devagar e abrir a câmera só pra você... Quer me ver todinha ao vivo? 🤤'
-      } else {
-        responseText = 'Vou tirar minha calcinha bem devagar e abrir a câmera só pra você... Quer me ver todinha ao vivo? 🤤'
-      }
-      setChatStep(5)
-    } else if (chatStep === 5) {
-      // Passo 5: Chamada para a prévia
-      responseText = 'Clica no botão aqui embaixo pra ver uma provinha do que eu vou fazer com você... 🔥'
-      
-      const typingDelay = Math.min(8000, Math.max(2500, responseText.length * 75))
-      
+    // Se acionou prévia diretamente ou pelo passo
+    if (decision.triggerPreview) {
       setTimeout(() => {
-        if (!unlockedOffers.includes('front')) {
-          if (previewsLeft > 0) {
-            setShowPreviewButton(true)
-          }
+        if (!unlockedOffers.includes('front') && previewsLeft > 0) {
+          setShowPreviewButton(true)
         }
-      }, typingDelay + 500)
-    } else {
-      setTimeout(() => {
-        setIsTyping(false)
-      }, 500)
-      return
+      }, 2000)
     }
 
-    // Calcula o delay dinâmico baseado no tamanho do texto (aprox. 75ms por caractere)
-    // Simula o tempo real de digitação no celular
-    const dynamicDelay = Math.min(8000, Math.max(2500, responseText.length * 75))
+    // Se usuário pediu preço/VIP
+    if (decision.openVipModal) {
+      setTimeout(() => {
+        if (!isVip) setShowVipModal(true)
+      }, 3500)
+    }
+
+    // Calcula delay realista de digitação
+    const dynamicDelay = Math.min(6000, Math.max(2000, decision.responseText.length * 60))
 
     // Envia a resposta da modelo
     setTimeout(() => {
@@ -343,7 +246,7 @@ export default function LiveRoom() {
       setMessages(prev => [...prev, { 
         id: Date.now(), 
         name: 'NICOLE OLIVEIRA 🔥', 
-        text: responseText, 
+        text: decision.responseText, 
         isModel: true 
       }])
     }, dynamicDelay)
