@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 15:30
+- Realizado commit e push das alterações para o repositório remoto (`main`):
+  - Inclusão do painel de métricas dos usuários em tempo real, rotas `/painel`, `/metrics` e dashboard estático.
+  - Atualização dos arquivos compilados em produção (`dist/`).
+
 ## 21/08/2026 - 15:20
 - Validação e cobertura total de telemetria do funil em tempo real:
   - Rastreamento 100% ativo e sincronizado entre abas para todos os pontos de conversão (acesso à live, digitação no chat, cliques nas prévias, CTA dos cards de prévia, botão flutuante VIP, gatilhos automáticos de ofertas em vídeo, geração e confirmação de pagamento PIX com valor e UTMs).
