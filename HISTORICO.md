@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 10:55
+- Ajustada a posição vertical do CTA e botões no `fabrica.html`:
+  - Aumentada a margem padrão inferior em +120px para não cobrir o botão "Saiba Mais" / "Arraste pra Cima" dos anúncios do Instagram / TikTok.
+  - Adicionado um controle deslizante de **"Altura dos Botões / CTA"** no painel de configurações para você ajustar facilmente a altura dos botões e do texto "Quer atender?" em tempo real conforme a necessidade.
+
 ## 21/08/2026 - 00:10
 - Padronizada a rota exclusiva para `/fabrica.html`:
   - Removidos aliases adicionais, mantendo unicamente `/fabrica.html`.
