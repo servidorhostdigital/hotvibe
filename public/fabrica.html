@@ -16,8 +16,12 @@
     .preview-canvas {
       max-width: 100%;
       height: auto;
+      aspect-ratio: 9 / 16;
       border-radius: 16px;
       box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255,255,255,0.1);
+    }
+    .preview-canvas.feed-aspect {
+      aspect-ratio: 1 / 1;
     }
   </style>
 </head>
@@ -167,7 +171,7 @@
 
       <!-- Canvas Real de Renderização -->
       <div class="flex justify-center w-full">
-        <canvas id="mainCanvas" class="preview-canvas bg-black" style="max-height: 650px;"></canvas>
+        <canvas id="mainCanvas" width="1080" height="1920" class="preview-canvas bg-black" style="max-height: 650px;"></canvas>
       </div>
     </div>
   </main>
@@ -212,6 +216,10 @@
     });
     // Inicialização do label
     btnDurationLabel.textContent = `${videoDurationSelect.value}s`;
+
+    // Força o tamanho inicial do canvas
+    canvas.width = 1080;
+    canvas.height = 1920;
 
     // Estado da mídia (Imagem ou Vídeo)
     let modelImg = new Image();
@@ -358,6 +366,12 @@
       const isFeed = formatSelect.value === 'feed';
       const width = 1080;
       const height = isFeed ? 1080 : 1920;
+
+      if (isFeed) {
+        canvas.classList.add('feed-aspect');
+      } else {
+        canvas.classList.remove('feed-aspect');
+      }
 
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
