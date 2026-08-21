@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 13:35
+- Adicionado botão "Baixar Vídeo" (Roxo) que aparece apenas quando um vídeo é enviado. Ele baixa o arquivo original diretamente, garantindo 100% da qualidade e do áudio.
+- O botão vermelho foi renomeado para "Gerar Vídeo" e agora é focado em gerar vídeos animados a partir de imagens.
+- Adicionado botão "Áudio Mudo / Áudio Ativo" acima do canvas para permitir testar o som do vídeo antes de baixar.
+
 ## 21/08/2026 - 13:30
 - Ajuste no pipeline de áudio do `fabrica.html`:
   - Corrigido o silenciamento nativo da tag de vídeo: agora o elemento permanece com volume habilitado para o grafo `Web Audio API` (`createMediaElementSource`), enquanto a saída local para os alto-falantes é atenuada por um `GainNode` em 0.
