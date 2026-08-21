@@ -5,10 +5,6 @@
       "destination": "/fabrica.html"
     },
     {
-      "source": "/criativo.html",
-      "destination": "/criativo.html"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

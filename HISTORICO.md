@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 00:10
+- Padronizada a rota exclusiva para `/fabrica.html`:
+  - Removidos aliases adicionais, mantendo unicamente `/fabrica.html`.
+  - Configuração do `vercel.json` ajustada para manter apenas o rewrite de `/fabrica.html`.
+
 ## 20/08/2026 - 23:35
 - Adicionado suporte à rota `/criativo.html` em paralelo à `/fabrica.html`:
   - Adicionado `criativo.html` na pasta `public/` e no build `dist/`.
