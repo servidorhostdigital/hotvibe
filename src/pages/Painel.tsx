@@ -18,7 +18,7 @@ import {
   Compass, 
   Activity
 } from 'lucide-react'
-import { getStoredEvents, clearStoredEvents, calculateFunnelSummary, MetricEvent, FunnelSummary } from '../utils/metrics'
+import { getStoredEvents, clearStoredEvents, calculateFunnelSummary, syncCloudEvents, MetricEvent, FunnelSummary } from '../utils/metrics'
 
 export default function Painel() {
   const [events, setEvents] = useState<MetricEvent[]>([])
@@ -52,6 +52,9 @@ export default function Painel() {
     window.addEventListener('hotlive_metric_updated', handleUpdate)
     window.addEventListener('storage', handleUpdate)
 
+    // Sincroniza eventos remotos em tempo real (aba anônima, outros dispositivos) sem banco
+    const cleanupSync = syncCloudEvents(() => loadData())
+
     let interval: ReturnType<typeof setInterval>
     if (autoRefresh) {
       interval = setInterval(loadData, 4000)
@@ -60,6 +63,7 @@ export default function Painel() {
     return () => {
       window.removeEventListener('hotlive_metric_updated', handleUpdate)
       window.removeEventListener('storage', handleUpdate)
+      cleanupSync()
       if (interval) clearInterval(interval)
     }
   }, [filterPeriod, autoRefresh])

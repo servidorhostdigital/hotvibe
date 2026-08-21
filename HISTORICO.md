@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 15:40
+- Implementado sincronismo em tempo real na nuvem sem banco de dados (Cloud Pub/Sub SSE):
+  - Agora os acessos em **aba anônima**, outros navegadores ou diferentes dispositivos/celulares são transmitidos e capturados pelo painel automaticamente em tempo real sem precisar de credenciais ou banco de dados externo.
+  - Sincronização adicionada tanto no utilitário `metrics.ts` / [live-funnel/src/pages/Painel.tsx](live-funnel/src/pages/Painel.tsx) quanto no dashboard HTML autônomo [painel/index.html](painel/index.html).
+
 ## 21/08/2026 - 15:30
 - Realizado commit e push das alterações para o repositório remoto (`main`):
   - Inclusão do painel de métricas dos usuários em tempo real, rotas `/painel`, `/metrics` e dashboard estático.

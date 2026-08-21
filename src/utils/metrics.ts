@@ -53,6 +53,7 @@ export interface FunnelSummary {
 
 const STORAGE_KEY = 'hotlive_metrics_events'
 const VISITOR_KEY = 'hotlive_session_id'
+const NTFY_TOPIC = 'hotlive-telemetry-pubsub-v1'
 
 // Obtém ou cria ID único da sessão do visitante
 export function getOrCreateSessionId(): string {
@@ -62,6 +63,20 @@ export function getOrCreateSessionId(): string {
     sessionStorage.setItem(VISITOR_KEY, sessionId)
   }
   return sessionId
+}
+
+// Envia evento para o canal pub/sub global gratuito (sem cadastro e sem banco)
+function broadcastCloudEvent(event: MetricEvent) {
+  try {
+    fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Title': `Hotlive Event: ${event.type}`
+      },
+      body: JSON.stringify(event)
+    }).catch(() => {})
+  } catch {}
 }
 
 // Salva um evento de métrica
@@ -94,21 +109,92 @@ export function trackEvent(
       }
     }
 
+    // Grava localmente
     const raw = localStorage.getItem(STORAGE_KEY)
     const list: MetricEvent[] = raw ? JSON.parse(raw) : []
     
-    // Limita aos últimos 2000 eventos para não estourar localStorage
-    list.unshift(newEvent)
-    if (list.length > 2000) {
-      list.length = 2000
+    // Evita duplicatas
+    if (!list.some(e => e.id === newEvent.id)) {
+      list.unshift(newEvent)
+      if (list.length > 2000) list.length = 2000
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
     }
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
 
     // Dispara evento nativo de storage para sincronizar abas do painel abertas
     window.dispatchEvent(new CustomEvent('hotlive_metric_updated', { detail: newEvent }))
+
+    // Transmite instantaneamente para sincronizar abas anônimas e outros dispositivos sem banco
+    broadcastCloudEvent(newEvent)
   } catch (e) {
     console.warn('[Metrics] Erro ao registrar evento:', e)
+  }
+}
+
+// Sincroniza eventos remotos da nuvem em tempo real (para aba anônima e outros dispositivos)
+export function syncCloudEvents(onNewEvent?: (evt: MetricEvent) => void): () => void {
+  try {
+    // 1. Carrega histórico recente
+    fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1`)
+      .then(res => res.text())
+      .then(text => {
+        if (!text) return
+        const lines = text.trim().split('\n')
+        const raw = localStorage.getItem(STORAGE_KEY)
+        const list: MetricEvent[] = raw ? JSON.parse(raw) : []
+        let changed = false
+
+        for (const line of lines) {
+          try {
+            const parsed = JSON.parse(line)
+            if (parsed.event === 'message' && parsed.message) {
+              const evt: MetricEvent = JSON.parse(parsed.message)
+              if (evt.id && !list.some(e => e.id === evt.id)) {
+                list.push(evt)
+                changed = true
+              }
+            }
+          } catch {}
+        }
+
+        if (changed) {
+          list.sort((a, b) => b.timestamp - a.timestamp)
+          if (list.length > 2000) list.length = 2000
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
+          window.dispatchEvent(new CustomEvent('hotlive_metric_updated'))
+        }
+      })
+      .catch(() => {})
+
+    // 2. Assina EventSource (SSE) para novos eventos instantâneos
+    const eventSource = new EventSource(`https://ntfy.sh/${NTFY_TOPIC}/sse`)
+    
+    eventSource.onmessage = (e) => {
+      try {
+        const payload = JSON.parse(e.data)
+        if (payload.event === 'message' && payload.message) {
+          const evt: MetricEvent = JSON.parse(payload.message)
+          if (evt.id) {
+            const raw = localStorage.getItem(STORAGE_KEY)
+            const list: MetricEvent[] = raw ? JSON.parse(raw) : []
+            if (!list.some(item => item.id === evt.id)) {
+              list.unshift(evt)
+              if (list.length > 2000) list.length = 2000
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
+              window.dispatchEvent(new CustomEvent('hotlive_metric_updated', { detail: evt }))
+              if (onNewEvent) onNewEvent(evt)
+            }
+          }
+        }
+      } catch {}
+    }
+
+    return () => {
+      try {
+        eventSource.close()
+      } catch {}
+    }
+  } catch {
+    return () => {}
   }
 }
 

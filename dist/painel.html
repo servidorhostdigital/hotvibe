@@ -262,6 +262,7 @@
   <!-- Script da Lógica de Métricas -->
   <script>
     const STORAGE_KEY = 'hotlive_metrics_events';
+    const NTFY_TOPIC = 'hotlive-telemetry-pubsub-v1';
     let currentPeriod = 'all';
     let currentTab = 'funnel';
 
@@ -272,6 +273,55 @@
       } catch (e) {
         return [];
       }
+    }
+
+    // Sincroniza eventos remotos sem banco de dados (tempo real e histórico)
+    function initCloudSync() {
+      try {
+        fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1`)
+          .then(res => res.text())
+          .then(text => {
+            if (!text) return;
+            const lines = text.trim().split('\n');
+            const list = getEvents();
+            let changed = false;
+            lines.forEach(line => {
+              try {
+                const parsed = JSON.parse(line);
+                if (parsed.event === 'message' && parsed.message) {
+                  const evt = JSON.parse(parsed.message);
+                  if (evt.id && !list.some(e => e.id === evt.id)) {
+                    list.push(evt);
+                    changed = true;
+                  }
+                }
+              } catch {}
+            });
+            if (changed) {
+              list.sort((a, b) => b.timestamp - a.timestamp);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+              renderDashboard();
+            }
+          }).catch(() => {});
+
+        const evtSource = new EventSource(`https://ntfy.sh/${NTFY_TOPIC}/sse`);
+        evtSource.onmessage = (e) => {
+          try {
+            const payload = JSON.parse(e.data);
+            if (payload.event === 'message' && payload.message) {
+              const evt = JSON.parse(payload.message);
+              if (evt.id) {
+                const list = getEvents();
+                if (!list.some(item => item.id === evt.id)) {
+                  list.unshift(evt);
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+                  renderDashboard();
+                }
+              }
+            }
+          } catch {}
+        };
+      } catch {}
     }
 
     function setPeriod(period) {
@@ -565,6 +615,7 @@
 
     // Inicialização
     renderDashboard();
+    initCloudSync();
     window.addEventListener('storage', renderDashboard);
     setInterval(renderDashboard, 4000);
   </script>
