@@ -1,5 +1,8 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 11:00
+- Aumentada a elevação padrão dos botões de chamada e do CTA no `fabrica.html` para `+180px` do rodapé, deixando ainda mais espaço de segurança para botões nativos das plataformas de tráfego pago (Instagram, TikTok, Facebook).
+
 ## 21/08/2026 - 10:55
 - Ajustada a posição vertical do CTA e botões no `fabrica.html`:
   - Aumentada a margem padrão inferior em +120px para não cobrir o botão "Saiba Mais" / "Arraste pra Cima" dos anúncios do Instagram / TikTok.
