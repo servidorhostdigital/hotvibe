@@ -55,10 +55,10 @@
         </div>
       </div>
 
-      <!-- Upload de Foto -->
+      <!-- Upload de Foto ou Vídeo -->
       <div>
-        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Foto da Modelo</label>
-        <input type="file" id="imageInput" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/20 file:text-emerald-400 hover:file:bg-emerald-500/30 cursor-pointer bg-slate-950 p-2 rounded-xl border border-slate-800">
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Foto ou Vídeo da Modelo</label>
+        <input type="file" id="mediaInput" accept="image/*,video/mp4,video/webm,video/quicktime,video/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/20 file:text-emerald-400 hover:file:bg-emerald-500/30 cursor-pointer bg-slate-950 p-2 rounded-xl border border-slate-800">
       </div>
 
       <!-- Formato -->
@@ -168,7 +168,7 @@
     const ctx = canvas.getContext('2d');
 
     // Controles
-    const imageInput = document.getElementById('imageInput');
+    const mediaInput = document.getElementById('mediaInput');
     const formatSelect = document.getElementById('formatSelect');
     const layoutSelect = document.getElementById('layoutSelect');
     const fontColorInput = document.getElementById('fontColor');
@@ -201,10 +201,19 @@
     // Inicialização do label
     btnDurationLabel.textContent = `${videoDurationSelect.value}s`;
 
-    // Estado da imagem
+    // Estado da mídia (Imagem ou Vídeo)
     let modelImg = new Image();
     modelImg.crossOrigin = "anonymous";
     let isImageLoaded = false;
+
+    let modelVideo = document.createElement('video');
+    modelVideo.crossOrigin = "anonymous";
+    modelVideo.muted = true;
+    modelVideo.loop = true;
+    modelVideo.playsInline = true;
+    modelVideo.autoplay = true;
+    let isVideoLoaded = false;
+    let currentMediaType = null; // 'image' | 'video' | null
 
     // Ícone de Telefone (Estilo WhatsApp/iOS)
     const phoneSvg = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%23ffffff"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>';
@@ -212,23 +221,52 @@
     phoneImg.src = phoneSvg;
     phoneImg.onload = () => render();
 
-    // Sem foto inicial: inicia com fundo preto limpo
-    imageInput.addEventListener('change', (e) => {
+    // Upload de Mídia (Foto ou Vídeo MP4)
+    mediaInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
-      if (file) {
+      if (!file) {
+        isImageLoaded = false;
+        isVideoLoaded = false;
+        currentMediaType = null;
+        if (modelVideo.src) {
+          modelVideo.pause();
+          modelVideo.removeAttribute('src');
+          modelVideo.load();
+        }
+        render();
+        return;
+      }
+
+      const isVideoFile = file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|mov|mkv)$/i);
+
+      if (isVideoFile) {
+        isImageLoaded = false;
+        const videoUrl = URL.createObjectURL(file);
+        modelVideo.src = videoUrl;
+        modelVideo.onloadeddata = () => {
+          isVideoLoaded = true;
+          currentMediaType = 'video';
+          modelVideo.play().catch(() => {});
+          render();
+        };
+      } else {
+        isVideoLoaded = false;
+        if (modelVideo.src) {
+          modelVideo.pause();
+          modelVideo.removeAttribute('src');
+          modelVideo.load();
+        }
         const reader = new FileReader();
         reader.onload = (event) => {
           modelImg = new Image();
           modelImg.onload = () => {
             isImageLoaded = true;
+            currentMediaType = 'image';
             render();
           };
           modelImg.src = event.target.result;
         };
         reader.readAsDataURL(file);
-      } else {
-        isImageLoaded = false;
-        render();
       }
     });
 
@@ -267,10 +305,17 @@
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Desenho da Imagem da Modelo com Cover e Posição
-      if (isImageLoaded && modelImg.width > 0) {
+      // 2. Desenho da Mídia (Imagem ou Vídeo MP4) com Cover e Posição
+      const mediaElement = currentMediaType === 'video' && isVideoLoaded && modelVideo.videoWidth > 0 
+        ? modelVideo 
+        : (currentMediaType === 'image' && isImageLoaded && modelImg.width > 0 ? modelImg : null);
+
+      if (mediaElement) {
+        const mediaW = currentMediaType === 'video' ? modelVideo.videoWidth : modelImg.width;
+        const mediaH = currentMediaType === 'video' ? modelVideo.videoHeight : modelImg.height;
+
         const baseZoom = (parseFloat(bgScale.value) / 100) * zoomFactor;
-        const imgAspect = modelImg.width / modelImg.height;
+        const imgAspect = mediaW / mediaH;
         const canvasAspect = width / height;
 
         let drawW, drawH;
@@ -286,7 +331,7 @@
         const drawX = (width - drawW) / 2;
         const drawY = (height - drawH) * offsetYPercent;
 
-        ctx.drawImage(modelImg, drawX, drawY, drawW, drawH);
+        ctx.drawImage(mediaElement, drawX, drawY, drawW, drawH);
       }
 
       // 3. Gradientes de Contraste para Leitura
@@ -319,44 +364,56 @@
       ctx.shadowOffsetY = 4;
 
       const isCenterLayout = layoutSelect.value === 'center';
-      const name = modelNameInput.value.trim() || 'Nicole';
-      const sub = subtitleInput.value.trim() || 'VIP PRIVADO';
-      const topT = topTextInput.value.trim() || 'Chamada de vídeo recebida...';
-      const ctaT = ctaTextInput.value.trim() || 'Quer atender?';
+      const name = modelNameInput.value.trim();
+      const sub = subtitleInput.value.trim();
+      const topT = topTextInput.value.trim();
+      const ctaT = ctaTextInput.value.trim();
       const mainColor = fontColorInput.value || '#ffffff';
 
       if (isCenterLayout) {
         // Texto Topo
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = '500 36px "Inter", sans-serif';
-        ctx.fillText(topT, width / 2, isFeed ? 100 : 160);
+        if (topT) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.font = '500 36px "Inter", sans-serif';
+          ctx.fillText(topT, width / 2, isFeed ? 100 : 160);
+        }
 
         // Centro: Nome e Subtítulo
         const centerY = isFeed ? (height * 0.45) : (height * 0.48);
-        ctx.fillStyle = mainColor;
-        ctx.font = '900 86px "Montserrat", sans-serif';
-        ctx.fillText(name, width / 2, centerY - 25);
+        if (name) {
+          ctx.fillStyle = mainColor;
+          ctx.font = '900 86px "Montserrat", sans-serif';
+          ctx.fillText(name, width / 2, sub ? centerY - 25 : centerY);
+        }
 
-        ctx.fillStyle = mainColor;
-        ctx.font = '700 38px "Montserrat", sans-serif';
-        ctx.letterSpacing = '4px';
-        ctx.fillText(sub, width / 2, centerY + 55);
-        ctx.letterSpacing = '0px';
+        if (sub) {
+          ctx.fillStyle = mainColor;
+          ctx.font = '700 38px "Montserrat", sans-serif';
+          ctx.letterSpacing = '4px';
+          ctx.fillText(sub, width / 2, name ? centerY + 55 : centerY);
+          ctx.letterSpacing = '0px';
+        }
       } else {
         // Layout Topo
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = '500 32px "Inter", sans-serif';
-        ctx.fillText(topT, width / 2, isFeed ? 80 : 140);
+        if (topT) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.font = '500 32px "Inter", sans-serif';
+          ctx.fillText(topT, width / 2, isFeed ? 80 : 140);
+        }
 
-        ctx.fillStyle = mainColor;
-        ctx.font = '900 78px "Montserrat", sans-serif';
-        ctx.fillText(name, width / 2, isFeed ? 160 : 230);
+        if (name) {
+          ctx.fillStyle = mainColor;
+          ctx.font = '900 78px "Montserrat", sans-serif';
+          ctx.fillText(name, width / 2, isFeed ? 160 : 230);
+        }
 
-        ctx.fillStyle = mainColor;
-        ctx.font = '700 34px "Montserrat", sans-serif';
-        ctx.letterSpacing = '4px';
-        ctx.fillText(sub, width / 2, isFeed ? 220 : 300);
-        ctx.letterSpacing = '0px';
+        if (sub) {
+          ctx.fillStyle = mainColor;
+          ctx.font = '700 34px "Montserrat", sans-serif';
+          ctx.letterSpacing = '4px';
+          ctx.fillText(sub, width / 2, isFeed ? 220 : 300);
+          ctx.letterSpacing = '0px';
+        }
       }
 
       // 5. Seção Inferior: Pergunta e Botões
@@ -365,10 +422,12 @@
       const btnY = baseBtnY - userOffset;
       const ctaY = btnY - (isFeed ? 110 : 130);
 
-      // Pergunta
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '700 42px "Inter", sans-serif';
-      ctx.fillText(ctaT, width / 2, ctaY);
+      // Pergunta (renderiza somente se não estiver vazio)
+      if (ctaT) {
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 42px "Inter", sans-serif';
+        ctx.fillText(ctaT, width / 2, ctaY);
+      }
 
       // Botões (Recusar e Atender)
       const btnRadius = isFeed ? 65 : 75;
@@ -511,7 +570,7 @@
       link.click();
     });
 
-    // 2. Gravação de Vídeo MP4 / WebM com Duração Selecionável (5s, 15s ou 30s)
+    // 2. Gravação de Vídeo MP4 / WebM com Duração Selecionável (5s, 15s ou 30s) com Áudio Original
     btnRecordMp4.addEventListener('click', async () => {
       const durationSeconds = parseInt(videoDurationSelect.value, 10) || 5;
       const originalText = btnRecordMp4.innerHTML;
@@ -524,14 +583,48 @@
           mimeType = 'video/mp4';
         }
         if (!MediaRecorder.isTypeSupported(mimeType)) {
-          mimeType = 'video/webm;codecs=vp9';
+          mimeType = 'video/webm;codecs=vp9,opus';
         }
         if (!MediaRecorder.isTypeSupported(mimeType)) {
           mimeType = 'video/webm';
         }
 
-        const stream = canvas.captureStream(30); // 30 FPS
-        const recorder = new MediaRecorder(stream, { mimeType });
+        const canvasStream = canvas.captureStream(30); // 30 FPS
+        const combinedStream = new MediaStream();
+
+        // Adiciona faixa de vídeo do canvas
+        canvasStream.getVideoTracks().forEach(track => combinedStream.addTrack(track));
+
+        // Se for vídeo com áudio, captura a faixa de áudio
+        let audioContext = null;
+        if (currentMediaType === 'video' && isVideoLoaded) {
+          try {
+            // Tenta obter stream de áudio do elemento de vídeo
+            const videoStream = modelVideo.captureStream ? modelVideo.captureStream() : (modelVideo.mozCaptureStream ? modelVideo.mozCaptureStream() : null);
+            if (videoStream && videoStream.getAudioTracks().length > 0) {
+              videoStream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+            } else {
+              // Fallback usando Web Audio API
+              audioContext = new (window.AudioContext || window.webkitAudioContext)();
+              if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+              }
+              const source = audioContext.createMediaElementSource(modelVideo);
+              const dest = audioContext.createMediaStreamDestination();
+              source.connect(dest);
+              dest.stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+            }
+          } catch (audioErr) {
+            console.warn("Áudio não detectado ou já roteado:", audioErr);
+          }
+
+          // Garante que o vídeo toque do início
+          modelVideo.currentTime = 0;
+          modelVideo.muted = false; // Desmuta durante a captura da gravação
+          modelVideo.play().catch(() => {});
+        }
+
+        const recorder = new MediaRecorder(combinedStream, { mimeType });
         const chunks = [];
 
         recorder.ondataavailable = (e) => {
@@ -549,6 +642,13 @@
           link.href = url;
           link.click();
 
+          if (currentMediaType === 'video') {
+            modelVideo.muted = true; // Volta a mutar o preview
+          }
+          if (audioContext) {
+            audioContext.close().catch(() => {});
+          }
+
           btnRecordMp4.innerHTML = originalText;
           btnRecordMp4.disabled = false;
           render(1.0, 0); // Restaura estado parado
@@ -563,8 +663,8 @@
           const elapsed = Date.now() - startTime;
           if (elapsed < duration) {
             const progress = elapsed / duration;
-            // Zoom suave de 1.0 até 1.08 na modelo
-            const currentZoom = 1.0 + (progress * 0.08);
+            // Zoom suave de 1.0 até 1.08 na modelo (somente se for imagem; em vídeo mantém o formato puro ou zoom base)
+            const currentZoom = currentMediaType === 'video' ? 1.0 : (1.0 + (progress * 0.08));
             // Pulso contínuo nos botões (mantém ritmo constante de pulso a cada ~1.25s)
             const pulse = (elapsed / 1000) * (Math.PI * 1.6);
 

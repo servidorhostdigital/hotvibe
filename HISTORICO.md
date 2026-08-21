@@ -1,5 +1,20 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 13:20
+- Adicionado suporte a preservação de **Áudio do Vídeo** exportado no `fabrica.html`:
+  - A faixa de áudio original do arquivo de vídeo importado agora é combinada com o stream gráfico do canvas através da Web Audio API / MediaStream.
+  - Ao gravar e baixar o vídeo (`.mp4`/`.webm`), o áudio original do vídeo da modelo é mantido com sincronismo no arquivo final.
+
+## 21/08/2026 - 13:15
+- Corrigido comportamento dos campos de texto no `fabrica.html`:
+  - Removido o fallback que forçava "Quer atender?", "Chamada de vídeo recebida...", "Nicole" e "VIP PRIVADO" caso o usuário apagasse o texto.
+  - Ao apagar ou deixar qualquer campo em branco (como a Pergunta CTA), o texto agora some completamente do criativo sem reaparecer o texto padrão.
+
+## 21/08/2026 - 13:10
+- Adicionado suporte a upload de **Vídeo MP4** (além de imagens PNG/JPG/WEBP) no `fabrica.html`:
+  - O campo de mídia agora aceita arquivos de vídeo (`.mp4`, `.webm`, `.mov`, etc.).
+  - Quando um vídeo é enviado, ele é renderizado dinamicamente em loop diretamente no canvas com suporte a todos os ajustes de zoom, enquadramento vertical, escurecimento e animação dos botões pulsantes de chamada.
+
 ## 21/08/2026 - 11:00
 - Aumentada a elevação padrão dos botões de chamada e do CTA no `fabrica.html` para `+180px` do rodapé, deixando ainda mais espaço de segurança para botões nativos das plataformas de tráfego pago (Instagram, TikTok, Facebook).
 
