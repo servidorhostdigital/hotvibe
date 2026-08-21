@@ -208,8 +208,8 @@
 
     let modelVideo = document.createElement('video');
     modelVideo.crossOrigin = "anonymous";
-    modelVideo.muted = true;
-    modelVideo.defaultMuted = true;
+    modelVideo.muted = false; // Não mutar o elemento nativo para permitir que o Web Audio API receba o áudio
+    modelVideo.volume = 1.0;
     modelVideo.loop = true;
     modelVideo.playsInline = true;
     modelVideo.autoplay = true;
@@ -218,6 +218,7 @@
     let audioContext = null;
     let audioSourceNode = null;
     let audioDestNode = null;
+    let monitorGainNode = null;
 
     // Inicializa nó de áudio persistente conectado ao vídeo
     function setupVideoAudioGraph() {
@@ -228,8 +229,14 @@
         if (!audioSourceNode && audioContext) {
           audioSourceNode = audioContext.createMediaElementSource(modelVideo);
           audioDestNode = audioContext.createMediaStreamDestination();
-          // Conecta o áudio do vídeo no destination para gravação e no destination de saída (controlado)
-          audioSourceNode.connect(audioDestNode);
+          
+          // Ganho de monitoramento (mudo na pré-visualização para não incomodar o usuário, mas gravando no stream)
+          monitorGainNode = audioContext.createGain();
+          monitorGainNode.gain.value = 0; // 0 = mudo nos autofalantes do usuário
+
+          audioSourceNode.connect(audioDestNode); // Envia o áudio limpo para a gravação
+          audioSourceNode.connect(monitorGainNode);
+          monitorGainNode.connect(audioContext.destination); // Conecta aos autofalantes apenas com ganho 0
         }
       } catch (err) {
         console.warn("Setup do nó de áudio:", err);
@@ -628,24 +635,15 @@
               await audioContext.resume();
             }
 
-            // Tenta obter track de áudio de várias formas
-            let audioTracks = [];
             if (audioDestNode && audioDestNode.stream) {
-              audioTracks = audioDestNode.stream.getAudioTracks();
+              const tracks = audioDestNode.stream.getAudioTracks();
+              tracks.forEach(track => combinedStream.addTrack(track));
             }
-            if (audioTracks.length === 0) {
-              const directStream = modelVideo.captureStream ? modelVideo.captureStream() : (modelVideo.mozCaptureStream ? modelVideo.mozCaptureStream() : null);
-              if (directStream) {
-                audioTracks = directStream.getAudioTracks();
-              }
-            }
-
-            audioTracks.forEach(track => combinedStream.addTrack(track));
           } catch (audioErr) {
             console.warn("Erro ao preparar áudio:", audioErr);
           }
 
-          // Inicia do segundo zero com som ativo no nó de áudio
+          // Inicia do segundo zero com som ativo
           modelVideo.currentTime = 0;
           modelVideo.muted = false;
           modelVideo.volume = 1.0;
@@ -673,10 +671,6 @@
           link.download = `${name}-${isFeed ? 'feed-1080x1080' : 'story-1080x1920'}-${durationSeconds}s.${ext}`;
           link.href = url;
           link.click();
-
-          if (currentMediaType === 'video') {
-            modelVideo.muted = true; // Mantém preview mudo após gravação
-          }
 
           btnRecordMp4.innerHTML = originalText;
           btnRecordMp4.disabled = false;

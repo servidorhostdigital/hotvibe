@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 13:30
+- Ajuste no pipeline de áudio do `fabrica.html`:
+  - Corrigido o silenciamento nativo da tag de vídeo: agora o elemento permanece com volume habilitado para o grafo `Web Audio API` (`createMediaElementSource`), enquanto a saída local para os alto-falantes é atenuada por um `GainNode` em 0.
+  - Isso garante que a faixa de áudio contenha dados sonoros reais durante a gravação com o `MediaRecorder`.
+
 ## 21/08/2026 - 13:25
 - Corrigido o roteamento de áudio com `Web Audio API` no `fabrica.html`:
   - O nó `AudioContext` e `createMediaElementSource` agora são inicializados uma única vez no carregamento da mídia, evitando o erro `InvalidStateError` do navegador.
