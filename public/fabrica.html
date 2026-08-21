@@ -209,11 +209,32 @@
     let modelVideo = document.createElement('video');
     modelVideo.crossOrigin = "anonymous";
     modelVideo.muted = true;
+    modelVideo.defaultMuted = true;
     modelVideo.loop = true;
     modelVideo.playsInline = true;
     modelVideo.autoplay = true;
     let isVideoLoaded = false;
     let currentMediaType = null; // 'image' | 'video' | null
+    let audioContext = null;
+    let audioSourceNode = null;
+    let audioDestNode = null;
+
+    // Inicializa nó de áudio persistente conectado ao vídeo
+    function setupVideoAudioGraph() {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (!audioSourceNode && audioContext) {
+          audioSourceNode = audioContext.createMediaElementSource(modelVideo);
+          audioDestNode = audioContext.createMediaStreamDestination();
+          // Conecta o áudio do vídeo no destination para gravação e no destination de saída (controlado)
+          audioSourceNode.connect(audioDestNode);
+        }
+      } catch (err) {
+        console.warn("Setup do nó de áudio:", err);
+      }
+    }
 
     // Ícone de Telefone (Estilo WhatsApp/iOS)
     const phoneSvg = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%23ffffff"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>';
@@ -246,6 +267,7 @@
         modelVideo.onloadeddata = () => {
           isVideoLoaded = true;
           currentMediaType = 'video';
+          setupVideoAudioGraph();
           modelVideo.play().catch(() => {});
           render();
         };
@@ -586,6 +608,9 @@
           mimeType = 'video/webm;codecs=vp9,opus';
         }
         if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/webm;codecs=vp8,opus';
+        }
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
           mimeType = 'video/webm';
         }
 
@@ -595,33 +620,40 @@
         // Adiciona faixa de vídeo do canvas
         canvasStream.getVideoTracks().forEach(track => combinedStream.addTrack(track));
 
-        // Se for vídeo com áudio, captura a faixa de áudio
-        let audioContext = null;
+        // Se for vídeo, captura a faixa de áudio
         if (currentMediaType === 'video' && isVideoLoaded) {
           try {
-            // Tenta obter stream de áudio do elemento de vídeo
-            const videoStream = modelVideo.captureStream ? modelVideo.captureStream() : (modelVideo.mozCaptureStream ? modelVideo.mozCaptureStream() : null);
-            if (videoStream && videoStream.getAudioTracks().length > 0) {
-              videoStream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
-            } else {
-              // Fallback usando Web Audio API
-              audioContext = new (window.AudioContext || window.webkitAudioContext)();
-              if (audioContext.state === 'suspended') {
-                await audioContext.resume();
-              }
-              const source = audioContext.createMediaElementSource(modelVideo);
-              const dest = audioContext.createMediaStreamDestination();
-              source.connect(dest);
-              dest.stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+            setupVideoAudioGraph();
+            if (audioContext && audioContext.state === 'suspended') {
+              await audioContext.resume();
             }
+
+            // Tenta obter track de áudio de várias formas
+            let audioTracks = [];
+            if (audioDestNode && audioDestNode.stream) {
+              audioTracks = audioDestNode.stream.getAudioTracks();
+            }
+            if (audioTracks.length === 0) {
+              const directStream = modelVideo.captureStream ? modelVideo.captureStream() : (modelVideo.mozCaptureStream ? modelVideo.mozCaptureStream() : null);
+              if (directStream) {
+                audioTracks = directStream.getAudioTracks();
+              }
+            }
+
+            audioTracks.forEach(track => combinedStream.addTrack(track));
           } catch (audioErr) {
-            console.warn("Áudio não detectado ou já roteado:", audioErr);
+            console.warn("Erro ao preparar áudio:", audioErr);
           }
 
-          // Garante que o vídeo toque do início
+          // Inicia do segundo zero com som ativo no nó de áudio
           modelVideo.currentTime = 0;
-          modelVideo.muted = false; // Desmuta durante a captura da gravação
-          modelVideo.play().catch(() => {});
+          modelVideo.muted = false;
+          modelVideo.volume = 1.0;
+          try {
+            await modelVideo.play();
+          } catch (e) {
+            console.warn("Play video err:", e);
+          }
         }
 
         const recorder = new MediaRecorder(combinedStream, { mimeType });
@@ -643,10 +675,7 @@
           link.click();
 
           if (currentMediaType === 'video') {
-            modelVideo.muted = true; // Volta a mutar o preview
-          }
-          if (audioContext) {
-            audioContext.close().catch(() => {});
+            modelVideo.muted = true; // Mantém preview mudo após gravação
           }
 
           btnRecordMp4.innerHTML = originalText;
@@ -663,9 +692,9 @@
           const elapsed = Date.now() - startTime;
           if (elapsed < duration) {
             const progress = elapsed / duration;
-            // Zoom suave de 1.0 até 1.08 na modelo (somente se for imagem; em vídeo mantém o formato puro ou zoom base)
+            // Zoom suave de 1.0 até 1.08 na modelo (somente se for imagem)
             const currentZoom = currentMediaType === 'video' ? 1.0 : (1.0 + (progress * 0.08));
-            // Pulso contínuo nos botões (mantém ritmo constante de pulso a cada ~1.25s)
+            // Pulso contínuo nos botões
             const pulse = (elapsed / 1000) * (Math.PI * 1.6);
 
             render(currentZoom, pulse);

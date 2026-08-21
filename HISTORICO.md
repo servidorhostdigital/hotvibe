@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 13:25
+- Corrigido o roteamento de áudio com `Web Audio API` no `fabrica.html`:
+  - O nó `AudioContext` e `createMediaElementSource` agora são inicializados uma única vez no carregamento da mídia, evitando o erro `InvalidStateError` do navegador.
+  - A faixa de áudio agora é capturada do destino contínuo do Web Audio API e injetada no `MediaRecorder` com suporte a codecs de áudio (`opus`/`mp4a`).
+
 ## 21/08/2026 - 13:20
 - Adicionado suporte a preservação de **Áudio do Vídeo** exportado no `fabrica.html`:
   - A faixa de áudio original do arquivo de vídeo importado agora é combinada com o stream gráfico do canvas através da Web Audio API / MediaStream.
