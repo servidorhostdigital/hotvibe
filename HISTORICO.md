@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 23:35
+- Adicionado suporte à rota `/criativo.html` em paralelo à `/fabrica.html`:
+  - Adicionado `criativo.html` na pasta `public/` e no build `dist/`.
+  - Adicionada regra em `vercel.json` para permitir o acesso direto tanto via `/fabrica.html` quanto via `/criativo.html`.
+
 ## 20/08/2026 - 23:25
 - Melhorada a interface do botão de download de vídeo no `fabrica.html`:
   - O seletor de duração foi integrado diretamente à esquerda do botão de vídeo como um grupo de botão unificado com gradiente vermelho.
