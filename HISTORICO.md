@@ -1,5 +1,9 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 13:58
+- Corrigido erro de sintaxe no JavaScript do `fabrica.html` que impedia o carregamento do script do canvas.
+- Preview e botão "Gravar Criativo" 100% restaurados e funcionais.
+
 ## 21/08/2026 - 13:50
 - Ajuste no gerador de criativo em vídeo (`fabrica.html`):
   - Unificado no botão vermelho "Gravar Criativo": agora ele renderiza o criativo completo em vídeo composto diretamente do Canvas (incluindo o vídeo em reprodução de fundo, textos, animação de pulso dos botões e a trilha de áudio original capturada).

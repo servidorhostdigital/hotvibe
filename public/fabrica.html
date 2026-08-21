@@ -755,22 +755,7 @@
         animate();
       } catch (err) {
         console.error("Erro na gravação:", err);
-        alert("Erro ao gravar o criativo em vídeo.");
-        btnRecordMp4.innerHTML = originalText;
-        btnRecordMp4.disabled = false;
-      }
-    });
-            requestAnimationFrame(animate);
-          } else {
-            recorder.stop();
-          }
-        }
-
-        animate();
-
-      } catch (err) {
-        console.error("Erro ao gerar vídeo:", err);
-        alert("Erro ao processar vídeo no navegador: " + err.message);
+        alert("Erro ao gravar o criativo em vídeo: " + err.message);
         btnRecordMp4.innerHTML = originalText;
         btnRecordMp4.disabled = false;
         render(1.0, 0);
