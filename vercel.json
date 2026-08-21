@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/fabrica.html",
+      "destination": "/fabrica.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

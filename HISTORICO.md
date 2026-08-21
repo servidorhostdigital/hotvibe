@@ -1,5 +1,23 @@
 # Histórico de Alterações
 
+## 20/08/2026 - 23:25
+- Melhorada a interface do botão de download de vídeo no `fabrica.html`:
+  - O seletor de duração foi integrado diretamente à esquerda do botão de vídeo como um grupo de botão unificado com gradiente vermelho.
+  - Ao selecionar 5s, 15s ou 30s, o texto do botão vermelho atualiza automaticamente em tempo real para `Baixar Vídeo (5s)`, `Baixar Vídeo (15s)` ou `Baixar Vídeo (30s)`.
+
+## 20/08/2026 - 23:20
+- Adicionadas opções de duração para geração de vídeo no `fabrica.html`:
+  - Seletor com opções de **5 segundos**, **15 segundos** e **30 segundos**.
+  - O rótulo do botão de gravação atualiza dinamicamente conforme a seleção.
+  - O nome do arquivo gerado agora inclui a duração (ex: `nicole-story-1080x1920-15s.mp4`).
+  - O cálculo da taxa de pulsação e animação foi ajustado para manter fluidez perfeita independente da duração escolhida.
+
+## 20/08/2026 - 22:55
+- Renomeada a rota e arquivo de criativos de `gerador-story.html` para `fabrica.html`:
+  - Arquivo renomeado na pasta [Criativo/fabrica.html](Criativo/fabrica.html).
+  - Arquivo copiado para a pasta de arquivos estáticos [live-funnel/public/fabrica.html](live-funnel/public/fabrica.html) para ser servido no Vite e incluído automaticamente no build de produção.
+  - Atualizado o [live-funnel/vercel.json](live-funnel/vercel.json) adicionando a regra explícita de rewrite para `/fabrica.html` antes do fallback SPA (`/(.*)` -> `/index.html`), permitindo o acesso direto em `www.site.com/fabrica.html`.
+
 ## 20/08/2026 - 19:15
 - Corrigido o filtro de extração de nome no `chatBrain.ts`:
   - Adicionada detecção inteligente com limpeza de repetições de caracteres (ex: `oiee`, `oieee`, `oiii`, `olaaa`).
