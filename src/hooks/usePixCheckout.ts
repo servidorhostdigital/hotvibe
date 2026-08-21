@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CONFIG } from '../config'
+import { trackEvent } from '../utils/metrics'
 
 interface PixResponse {
   qrcode: string | null
@@ -14,7 +15,7 @@ interface UsePixCheckoutProps {
   onSuccess: () => void
 }
 
-export function usePixCheckout({ tracking, onSuccess }: UsePixCheckoutProps) {
+export function usePixCheckout({ slug, tracking, onSuccess }: UsePixCheckoutProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pixData, setPixData] = useState<PixResponse | null>(null)
@@ -65,6 +66,14 @@ export function usePixCheckout({ tracking, onSuccess }: UsePixCheckoutProps) {
         copiaCola: data.data.pix_code,
         transactionId: data.data.txid
       })
+
+      // Registra evento de PIX gerado
+      trackEvent('pix_generated', {
+        valor,
+        plano,
+        txid: data.data.txid,
+        slug
+      })
     } catch (err: any) {
       setError(err.message || 'Não foi possível conectar. Tente novamente.')
     } finally {
@@ -91,6 +100,11 @@ export function usePixCheckout({ tracking, onSuccess }: UsePixCheckoutProps) {
 
         if (data?.data?.status === 'paid' || data?.status === 'paid') {
           clearInterval(interval)
+          // Registra evento de PIX pago com sucesso
+          trackEvent('pix_paid', {
+            txid: pixData.transactionId,
+            slug
+          })
           onSuccess()
         }
       } catch (err) {

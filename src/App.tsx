@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import LiveRoom from './pages/LiveRoom'
+import Painel from './pages/Painel'
 import { captureAndPersistUtms } from './utils/utm'
 
 function App() {
@@ -12,6 +13,8 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LiveRoom />} />
+      <Route path="/painel" element={<Painel />} />
+      <Route path="/metrics" element={<Painel />} />
       <Route path="/hotlive/:slug" element={<LiveRoom />} />
       <Route path="/:slug" element={<LiveRoom />} />
       <Route path="*" element={<Navigate to="/" replace />} />

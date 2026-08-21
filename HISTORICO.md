@@ -1,5 +1,18 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 15:20
+- Validação e cobertura total de telemetria do funil em tempo real:
+  - Rastreamento 100% ativo e sincronizado entre abas para todos os pontos de conversão (acesso à live, digitação no chat, cliques nas prévias, CTA dos cards de prévia, botão flutuante VIP, gatilhos automáticos de ofertas em vídeo, geração e confirmação de pagamento PIX com valor e UTMs).
+  - Build de produção verificado com sucesso sem nenhum erro.
+
+## 21/08/2026 - 15:15
+- Criado o **Painel de Métricas dos Usuários** (`/painel`, `/metrics` e `/painel.html`):
+  - Criado o utilitário de telemetria `live-funnel/src/utils/metrics.ts` com rastreamento automático de visitas, mensagens enviadas no chat, prévias assistidas, abertura de modal VIP, ofertas disparadas, PIX gerados e PIX pagos (com preservação de UTMs e valores).
+  - Criada a página de dashboard React [live-funnel/src/pages/Painel.tsx](live-funnel/src/pages/Painel.tsx) com KPIs em tempo real (Faturamento, Conversão de PIX para Venda, Total de PIX e Visitantes Únicos).
+  - Adicionadas abas detalhadas: Funil de Conversão visual etapa por etapa, Desempenho por Origem / UTMs (`utm_source`/`src`), Vendas por Plano/Oferta e Feed de Atividades recentes com log cronológico.
+  - Criada a versão estática autônoma em [painel/index.html](painel/index.html) e [live-funnel/public/painel.html](live-funnel/public/painel.html) com sincronização em tempo real entre abas (`storage` events) e suporte a simulação de dados de teste.
+  - Roteamento configurado em `App.tsx` e `vercel.json`.
+
 ## 21/08/2026 - 13:58
 - Corrigido erro de sintaxe no JavaScript do `fabrica.html` que impedia o carregamento do script do canvas.
 - Preview e botão "Gravar Criativo" 100% restaurados e funcionais.

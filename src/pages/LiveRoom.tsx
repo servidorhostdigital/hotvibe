@@ -4,6 +4,7 @@ import { Send, Eye, Download } from 'lucide-react'
 import { usePixCheckout } from '../hooks/usePixCheckout'
 import { PixModal } from '../components/PixModal'
 import { processUserChat } from '../utils/chatBrain'
+import { trackEvent } from '../utils/metrics'
 
 // Configuração das Ofertas
 const OFFERS = [
@@ -85,6 +86,11 @@ export default function LiveRoom() {
     }
   })
 
+  // Registra a visita na live assim que entra
+  useEffect(() => {
+    trackEvent('visit', { slug: currentSlug })
+  }, [currentSlug])
+
   // Auto-scroll para a última mensagem
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -157,6 +163,7 @@ export default function LiveRoom() {
         videoRef.current.pause()
       }
       setActiveOffer(offerToTrigger)
+      trackEvent('offer_trigger', { offerId: offerToTrigger.id, slug: currentSlug })
     }
   }
 
@@ -200,6 +207,9 @@ export default function LiveRoom() {
     // Marca que o usuário interagiu
     setHasInteracted(true)
 
+    // Registra métrica de envio de mensagem
+    trackEvent('message_sent', { messageText: userMessage, step: chatStep, slug: currentSlug })
+
     // Adiciona a mensagem do usuário
     setMessages(prev => [...prev, { id: Date.now(), name: 'VOCÊ', text: userMessage, isModel: false }])
     setInputValue('')
@@ -233,7 +243,10 @@ export default function LiveRoom() {
     // Se usuário pediu preço/VIP
     if (decision.openVipModal) {
       setTimeout(() => {
-        if (!isVip) setShowVipModal(true)
+        if (!isVip) {
+          setShowVipModal(true)
+          trackEvent('vip_modal_open', { trigger: 'chat_request', slug: currentSlug })
+        }
       }, 3500)
     }
 
@@ -259,6 +272,7 @@ export default function LiveRoom() {
       const nextRemaining = previewsLeft - 1
       
       setPreviewsLeft(nextRemaining)
+      trackEvent('preview_click', { previewRemaining: nextRemaining, slug: currentSlug })
       
       const previewTexts = [
         'Olha como eu fico molhadinha pensando em você... quer ver tudo? Vem pro meu VIP, amor 💋🔥',
@@ -386,7 +400,10 @@ export default function LiveRoom() {
 
                         {/* CTA Direto para o VIP */}
                         <button
-                          onClick={() => setShowVipModal(true)}
+                          onClick={() => {
+                            setShowVipModal(true)
+                            trackEvent('vip_modal_open', { trigger: 'preview_card_cta', slug: currentSlug })
+                          }}
                           className="w-full bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 active:scale-95 text-white font-black text-[11px] py-1.5 px-2.5 rounded-lg flex items-center justify-center gap-1 shadow-md transition-transform"
                         >
                           <span>💦</span> VAMOS GOZAR JUNTINHO AMOR 🔥
@@ -428,7 +445,10 @@ export default function LiveRoom() {
           {(showVipModal || previewsLeft === 0) && !isVip && (
             <div className="flex items-center justify-center gap-3 mb-3 relative z-40">
               <button 
-                onClick={() => setShowVipModal(true)}
+                onClick={() => {
+                  setShowVipModal(true)
+                  trackEvent('vip_modal_open', { trigger: 'floating_vip_button', slug: currentSlug })
+                }}
                 className="w-full bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 text-white font-black text-sm sm:text-base px-6 py-3 sm:py-3.5 rounded-full flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95 shadow-xl"
               >
                 <span>🔓</span> LIBERAR VIP
