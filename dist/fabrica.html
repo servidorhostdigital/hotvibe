@@ -43,22 +43,17 @@
             <i class="fa-solid fa-image text-emerald-400"></i> Baixar Img
           </button>
           
-          <!-- Botão Vermelho: Gerar Vídeo Animado da Imagem (5s, 15s, 30s) -->
+          <!-- Botão Vermelho: Gravar Vídeo com os Textos, Botões e Áudio -->
           <div class="inline-flex items-center rounded-lg shadow shadow-red-500/20 bg-gradient-to-r from-red-600 to-rose-600 p-0.5">
             <select id="videoDurationSelect" class="bg-black/30 hover:bg-black/40 text-white text-xs font-bold rounded-l-md px-2 py-1.5 focus:outline-none border-0 cursor-pointer appearance-none text-center">
               <option value="5" selected class="bg-slate-900 text-white">5s</option>
               <option value="15" class="bg-slate-900 text-white">15s</option>
               <option value="30" class="bg-slate-900 text-white">30s</option>
             </select>
-            <button id="btnRecordMp4" class="px-3 py-1.5 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold rounded-r-md flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap border-l border-white/20" title="Gera um vídeo animado com pulso a partir da imagem">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Vídeo (<span id="btnDurationLabel">5s</span>)
+            <button id="btnRecordMp4" class="px-3 py-1.5 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold rounded-r-md flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap border-l border-white/20" title="Grava o criativo completo (vídeo/foto de fundo + textos + botões animados + áudio)">
+              <i class="fa-solid fa-video"></i> Gravar Criativo (<span id="btnDurationLabel">5s</span>)
             </button>
           </div>
-
-          <!-- Botão Roxo / Azul: Baixar Vídeo com Áudio Original -->
-          <button id="btnDownloadOriginalVideo" class="px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold rounded-lg shadow shadow-indigo-500/20 flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap" style="display: none;">
-            <i class="fa-solid fa-download"></i> Baixar Vídeo
-          </button>
         </div>
       </div>
 
@@ -202,7 +197,6 @@
     const btnDurationLabel = document.getElementById('btnDurationLabel');
     const btnDownloadPng = document.getElementById('btnDownloadPng');
     const btnRecordMp4 = document.getElementById('btnRecordMp4');
-    const btnDownloadOriginalVideo = document.getElementById('btnDownloadOriginalVideo');
     const btnToggleSound = document.getElementById('btnToggleSound');
     const soundIcon = document.getElementById('soundIcon');
     const soundText = document.getElementById('soundText');
@@ -240,7 +234,10 @@
     let isSoundEnabled = false;
 
     // Alternar som da pré-visualização
-    btnToggleSound.addEventListener('click', () => {
+    btnToggleSound.addEventListener('click', async () => {
+      if (audioContext && audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
       isSoundEnabled = !isSoundEnabled;
       if (monitorGainNode) {
         monitorGainNode.gain.value = isSoundEnabled ? 1 : 0;
@@ -266,11 +263,11 @@
           
           // Ganho de monitoramento (mudo na pré-visualização para não incomodar o usuário, mas gravando no stream)
           monitorGainNode = audioContext.createGain();
-          monitorGainNode.gain.value = 0; // 0 = mudo nos autofalantes do usuário
+          monitorGainNode.gain.value = isSoundEnabled ? 1 : 0;
 
           audioSourceNode.connect(audioDestNode); // Envia o áudio limpo para a gravação
           audioSourceNode.connect(monitorGainNode);
-          monitorGainNode.connect(audioContext.destination); // Conecta aos autofalantes apenas com ganho 0
+          monitorGainNode.connect(audioContext.destination); // Conecta aos autofalantes
         }
       } catch (err) {
         console.warn("Setup do nó de áudio:", err);
@@ -284,16 +281,12 @@
     phoneImg.onload = () => render();
 
     // Upload de Mídia (Foto ou Vídeo MP4)
-    let originalVideoFile = null;
-
     mediaInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
-      originalVideoFile = file || null;
       if (!file) {
         isImageLoaded = false;
         isVideoLoaded = false;
         currentMediaType = null;
-        btnDownloadOriginalVideo.style.display = 'none';
         btnToggleSound.style.display = 'none';
         if (modelVideo.src) {
           modelVideo.pause();
@@ -310,7 +303,6 @@
         isImageLoaded = false;
         const videoUrl = URL.createObjectURL(file);
         modelVideo.src = videoUrl;
-        btnDownloadOriginalVideo.style.display = 'inline-flex';
         btnToggleSound.style.display = 'inline-flex';
         modelVideo.onloadeddata = () => {
           isVideoLoaded = true;
@@ -321,7 +313,6 @@
         };
       } else {
         isVideoLoaded = false;
-        btnDownloadOriginalVideo.style.display = 'none';
         btnToggleSound.style.display = 'none';
         if (modelVideo.src) {
           modelVideo.pause();
@@ -642,19 +633,7 @@
       link.click();
     });
 
-    // 2. Download Direto do Arquivo de Vídeo (Garante 100% de Preservação do Áudio Original e Qualidade)
-    btnDownloadOriginalVideo.addEventListener('click', () => {
-      if (!originalVideoFile) return;
-      const isFeed = formatSelect.value === 'feed';
-      const name = sanitizeFilename(modelNameInput.value);
-      const ext = originalVideoFile.name.split('.').pop() || 'mp4';
-      const link = document.createElement('a');
-      link.download = `${name}-video-${isFeed ? 'feed' : 'story'}.${ext}`;
-      link.href = URL.createObjectURL(originalVideoFile);
-      link.click();
-    });
-
-    // 3. Gravação / Renderização do Vídeo da Imagem com Duração Selecionável (5s, 15s ou 30s)
+    // 2. Gravação do Criativo Completo (Vídeo/Foto + Textos + Botões + Áudio)
     btnRecordMp4.addEventListener('click', async () => {
       const durationSeconds = parseInt(videoDurationSelect.value, 10) || 5;
       const originalText = btnRecordMp4.innerHTML;
@@ -662,27 +641,22 @@
       btnRecordMp4.disabled = true;
 
       try {
-        let mimeType = 'video/mp4; codecs=avc1.42E01E,mp4a.40.2';
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
+        let mimeType = 'video/webm;codecs=vp8,opus';
+        if (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1,mp4a.40.2')) {
+          mimeType = 'video/mp4;codecs=avc1,mp4a.40.2';
+        } else if (MediaRecorder.isTypeSupported('video/mp4')) {
           mimeType = 'video/mp4';
-        }
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
+        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
           mimeType = 'video/webm;codecs=vp9,opus';
-        }
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
-          mimeType = 'video/webm;codecs=vp8,opus';
-        }
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
-          mimeType = 'video/webm';
         }
 
         const canvasStream = canvas.captureStream(30); // 30 FPS
         const combinedStream = new MediaStream();
 
-        // Adiciona faixa de vídeo do canvas
+        // Adiciona faixa de vídeo renderizado com textos e botões do canvas
         canvasStream.getVideoTracks().forEach(track => combinedStream.addTrack(track));
 
-        // Se for vídeo, captura a faixa de áudio
+        // Se for vídeo, captura o áudio do vídeo original
         if (currentMediaType === 'video' && isVideoLoaded) {
           try {
             setupVideoAudioGraph();
@@ -690,18 +664,23 @@
               await audioContext.resume();
             }
 
+            // Tenta obter track do audioDestNode
             if (audioDestNode && audioDestNode.stream) {
               const tracks = audioDestNode.stream.getAudioTracks();
               tracks.forEach(track => combinedStream.addTrack(track));
+            }
+
+            // Fallback: se não pegou track do audioDestNode, tenta direto do video element
+            if (combinedStream.getAudioTracks().length === 0 && modelVideo.captureStream) {
+              const rawVidStream = modelVideo.captureStream();
+              rawVidStream.getAudioTracks().forEach(t => combinedStream.addTrack(t));
             }
           } catch (audioErr) {
             console.warn("Erro ao preparar áudio:", audioErr);
           }
 
-          // Inicia do segundo zero com som ativo
+          // Reinicia vídeo do início durante a gravação
           modelVideo.currentTime = 0;
-          modelVideo.muted = false;
-          modelVideo.volume = 1.0;
           try {
             await modelVideo.play();
           } catch (e) {
@@ -709,7 +688,11 @@
           }
         }
 
-        const recorder = new MediaRecorder(combinedStream, { mimeType });
+        const recorder = new MediaRecorder(combinedStream, {
+          mimeType,
+          videoBitsPerSecond: 4000000,
+          audioBitsPerSecond: 128000
+        });
         const chunks = [];
 
         recorder.ondataavailable = (e) => {
@@ -723,13 +706,13 @@
           const blob = new Blob(chunks, { type: mimeType });
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
-          link.download = `${name}-${isFeed ? 'feed-1080x1080' : 'story-1080x1920'}-${durationSeconds}s.${ext}`;
+          link.download = `${name}-criativo-${isFeed ? 'feed' : 'story'}-${durationSeconds}s.${ext}`;
           link.href = url;
           link.click();
 
           btnRecordMp4.innerHTML = originalText;
           btnRecordMp4.disabled = false;
-          render(1.0, 0); // Restaura estado parado
+          render(1.0, 0);
         };
 
         recorder.start();
@@ -747,6 +730,22 @@
             const pulse = (elapsed / 1000) * (Math.PI * 1.6);
 
             render(currentZoom, pulse);
+            requestAnimationFrame(animate);
+          } else {
+            if (recorder.state !== 'inactive') {
+              recorder.stop();
+            }
+          }
+        }
+
+        animate();
+      } catch (err) {
+        console.error("Erro na gravação:", err);
+        alert("Erro ao gravar o criativo em vídeo.");
+        btnRecordMp4.innerHTML = originalText;
+        btnRecordMp4.disabled = false;
+      }
+    });
             requestAnimationFrame(animate);
           } else {
             recorder.stop();

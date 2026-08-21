@@ -1,5 +1,10 @@
 # Histórico de Alterações
 
+## 21/08/2026 - 13:50
+- Ajuste no gerador de criativo em vídeo (`fabrica.html`):
+  - Unificado no botão vermelho "Gravar Criativo": agora ele renderiza o criativo completo em vídeo composto diretamente do Canvas (incluindo o vídeo em reprodução de fundo, textos, animação de pulso dos botões e a trilha de áudio original capturada).
+  - Codec otimizado para gravação com `vp8/opus` e `avc1/mp4a` para exportação estável do arquivo final com todos os elementos visuais aplicados.
+
 ## 21/08/2026 - 13:35
 - Adicionado botão "Baixar Vídeo" (Roxo) que aparece apenas quando um vídeo é enviado. Ele baixa o arquivo original diretamente, garantindo 100% da qualidade e do áudio.
 - O botão vermelho foi renomeado para "Gerar Vídeo" e agora é focado em gerar vídeos animados a partir de imagens.
